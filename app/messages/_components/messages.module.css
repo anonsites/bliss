@@ -1,0 +1,605 @@
+.messagesHeader {
+  padding:
+    max(3.15rem, calc(env(safe-area-inset-top) + 1.15rem))
+    max(1.25rem, calc(env(safe-area-inset-right) + 1rem))
+    1rem
+    max(1.25rem, calc(env(safe-area-inset-left) + 1rem));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.messagesTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+
+.messagesNotice {
+  padding:
+    0.875rem
+    max(1.25rem, calc(env(safe-area-inset-right) + 1rem))
+    0
+    max(1.25rem, calc(env(safe-area-inset-left) + 1rem));
+}
+
+.messagesListViewport {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding:
+    1rem
+    max(1rem, calc(env(safe-area-inset-right) + 0.75rem))
+    max(6rem, calc(env(safe-area-inset-bottom) + 5rem))
+    max(1rem, calc(env(safe-area-inset-left) + 0.75rem));
+}
+
+.chatList {
+  display: grid;
+  min-width: 0;
+  gap: 0.9rem;
+  padding-bottom: 0.15rem;
+}
+
+.chatListItem {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(180deg, rgba(20, 23, 31, 0.96), rgba(12, 15, 21, 0.98)),
+    #0b0d12;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 16px 32px rgba(0, 0, 0, 0.16);
+  text-align: left;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.chatListItemActive {
+  border-color: rgba(39, 214, 197, 0.26);
+  background:
+    linear-gradient(180deg, rgba(27, 45, 48, 0.92), rgba(12, 20, 23, 0.98)),
+    #0b0d12;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 20px 40px rgba(0, 0, 0, 0.24);
+}
+
+.chatListItemAvatar,
+.chatViewAvatar {
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.chatListItemAvatar {
+  width: 4rem;
+  height: 4rem;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.chatListItemAvatarOnline {
+  position: absolute;
+  bottom: 0.12rem;
+  right: 0.25rem;
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 999px;
+  background: #22c55e;
+  border: 2px solid rgba(11, 13, 18, 1);
+  box-shadow: 0 0 0 2px rgba(39, 214, 197, 0.18);
+}
+
+.chatViewAvatar {
+  width: 2.9rem;
+  height: 2.9rem;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+.chatListItemAvatar img,
+.chatViewAvatar img {
+  object-fit: cover;
+}
+
+.chatListItemFallback,
+.chatViewAvatarFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at top, rgba(39, 214, 197, 0.18), transparent 60%),
+    rgba(15, 17, 24, 0.95);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.chatListItemFallback {
+  font-size: 0.9rem;
+}
+
+.chatViewAvatarFallback {
+  font-size: 0.95rem;
+}
+
+.chatListItemBody {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  gap: 0.38rem;
+}
+
+.chatListItemTop,
+.chatListItemBottom,
+.chatListItemNameRow,
+.chatViewNameRow,
+.chatViewIdentity {
+  display: flex;
+  align-items: center;
+}
+
+.chatListItemTop,
+.chatListItemBottom {
+  min-width: 0;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.chatListItemNameRow,
+.chatViewNameRow,
+.chatViewIdentity {
+  min-width: 0;
+  gap: 0.35rem;
+}
+
+.chatListItemNameRow {
+  flex: 1;
+}
+
+.chatListItemName,
+.chatViewName {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.chatListItemName {
+  font-size: 0.96rem;
+}
+
+.chatViewName {
+  font-size: 1rem;
+}
+
+.chatListItemTime {
+  flex-shrink: 0;
+  color: rgba(226, 232, 240, 0.42);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+.chatListItemPreview {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(226, 232, 240, 0.6);
+  font-size: 0.87rem;
+}
+
+.chatListItemPreviewUnread {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.unreadBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.32rem;
+  border-radius: 999px;
+  background: rgba(39, 214, 197, 0.2);
+  border: 1px solid rgba(39, 214, 197, 0.28);
+  color: #cbfffa;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.chatEmptyState,
+.chatViewBodyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  color: rgba(226, 232, 240, 0.56);
+}
+
+.chatEmptyState {
+  min-height: 100%;
+  padding: 2rem 1rem 4rem;
+}
+
+.chatView {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100dvh;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+.chatViewHeader {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  transform: translateZ(0);
+  will-change: transform;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding:
+    max(1rem, calc(env(safe-area-inset-top) + 0.5rem))
+    max(1rem, calc(env(safe-area-inset-right) + 0.9rem))
+    1rem
+    max(1rem, calc(env(safe-area-inset-left) + 0.9rem));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(16, 19, 26, 0.98), rgba(10, 12, 18, 0.95)),
+    #0b0d12;
+  backdrop-filter: blur(18px);
+}
+
+.chatViewBackButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(226, 232, 240, 0.72);
+}
+
+.chatViewBackButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.chatViewMeta {
+  min-width: 0;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.chatViewStatus {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(226, 232, 240, 0.58);
+  font-size: 0.75rem;
+}
+
+.chatViewStatusText {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem; /* Reduced gap */
+}
+
+.chatViewStatusText .inline-flex {
+  margin-right: 0.2rem; /* Adjusted margin for the pulse indicator */
+}
+
+.chatViewBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding:
+    1rem
+    max(1rem, calc(env(safe-area-inset-right) + 0.85rem))
+    max(5rem, calc(env(safe-area-inset-bottom) + 4.5rem))
+    max(1rem, calc(env(safe-area-inset-left) + 0.85rem));
+  scroll-padding-bottom: max(5rem, calc(env(safe-area-inset-bottom) + 4.5rem));
+}
+
+.chatViewStream {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100%;
+  gap: 0.75rem;
+}
+
+.chatViewBodyState {
+  flex: 1;
+  padding: 2rem 1rem;
+}
+
+.messageRow {
+  display: flex;
+  width: 100%;
+}
+
+.messageRowMine {
+  justify-content: flex-end;
+}
+
+.messageRowTheirs {
+  justify-content: flex-start;
+}
+
+.messageBubble {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  column-gap: 0.55rem;
+  row-gap: 0.3rem;
+  width: fit-content;
+  min-width: min(11rem, 100%);
+  max-width: min(88%, 34rem);
+  padding: 0.82rem 0.95rem 0.72rem;
+  border: 1px solid transparent;
+  border-radius: 1.35rem;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.16);
+}
+
+.messageBubbleMine {
+  border-top-right-radius: 0.55rem;
+  border-color: rgba(39, 214, 197, 0.24);
+  background:
+    linear-gradient(180deg, rgba(39, 214, 197, 0.22), rgba(22, 88, 82, 0.38)),
+    #103330;
+  color: #f2fffd;
+}
+
+.messageBubbleTheirs {
+  border-top-left-radius: 0.55rem;
+  border-color: rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)),
+    rgba(17, 20, 28, 0.96);
+  color: #f8fafc;
+}
+
+.messageContent {
+  min-width: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.93rem;
+  line-height: 1.45;
+}
+
+.messageMeta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  align-self: end;
+  white-space: nowrap;
+}
+
+.messageTime {
+  color: rgba(226, 232, 240, 0.66);
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+}
+
+.messageStatus {
+  display: inline-flex;
+  align-items: center;
+  color: rgba(226, 232, 240, 0.56);
+}
+
+.messageStatusRead {
+  color: #63e9da;
+}
+
+.messageStatusTickOverlap {
+  margin-left: -0.48rem;
+}
+
+.chatComposerDock {
+  position: sticky;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 70;
+  transform: translateZ(0);
+  will-change: transform;
+  padding:
+    0
+    max(0.9rem, calc(env(safe-area-inset-right) + 0.8rem))
+    max(0.9rem, calc(env(safe-area-inset-bottom) + 0.5rem))
+    max(0.9rem, calc(env(safe-area-inset-left) + 0.8rem));
+  pointer-events: none;
+  transition: padding-bottom 180ms ease;
+}
+
+.composer {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.65rem;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.6rem;
+  background:
+    linear-gradient(180deg, rgba(18, 21, 29, 0.92), rgba(10, 12, 18, 0.96)),
+    #0b0d12;
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(18px) saturate(180%);
+}
+
+.composerAttachButton,
+.composerSendButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.65rem;
+  height: 2.65rem;
+  border-radius: 999px;
+  align-self: end;
+}
+
+.composerAttachButton {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(226, 232, 240, 0.48);
+}
+
+.composerInput {
+  min-width: 0;
+  width: 100%;
+  min-height: 2.75rem;
+  max-height: 10rem;
+  padding: 0.72rem 1rem 0.76rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.2rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  resize: none;
+  overflow-y: hidden;
+}
+
+.composerInput::placeholder {
+  color: rgba(226, 232, 240, 0.4);
+}
+
+.composerInput:focus {
+  border-color: rgba(39, 214, 197, 0.28);
+  box-shadow: 0 0 0 3px rgba(39, 214, 197, 0.12);
+}
+
+.composerSendButton {
+  border: 1px solid rgba(39, 214, 197, 0.24);
+  background: rgba(39, 214, 197, 0.16);
+  color: #9af8ee;
+}
+
+.composerSendButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(39, 214, 197, 0.24);
+  color: #d8fffb;
+}
+
+.composerAttachButton:disabled,
+.composerSendButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (min-width: 1024px) {
+  .chatView {
+    height: 100%;
+    min-height: 100%;
+    max-height: none;
+    background:
+      radial-gradient(circle at top, rgba(39, 214, 197, 0.08), transparent 26%),
+      linear-gradient(180deg, rgba(12, 14, 20, 0.98), rgba(6, 8, 12, 1)),
+      #06070b;
+  }
+
+  .messagesHeader {
+    padding: 0.85rem 1.2rem 0.6rem;
+  }
+
+  .messagesNotice {
+    padding: 0.7rem 1.2rem 0;
+  }
+
+  .messagesListViewport {
+    padding: 0.65rem 0.7rem 0.9rem;
+  }
+
+  .chatList {
+    gap: 0.65rem;
+  }
+
+  .chatListItem {
+    gap: 0.75rem;
+    padding: 0.78rem 0.85rem;
+    border-radius: 1.3rem;
+  }
+
+  .chatListItemAvatar {
+    width: 2.7rem;
+    height: 2.7rem;
+  }
+
+  .chatListItemBody {
+    gap: 0.28rem;
+  }
+
+  .chatListItemName {
+    font-size: 0.92rem;
+  }
+
+  .chatListItemTime {
+    font-size: 0.68rem;
+  }
+
+  .chatListItemPreview {
+    font-size: 0.82rem;
+  }
+
+  .chatViewHeader {
+    padding: 0.8rem 1rem;
+  }
+
+  .chatViewBody {
+    padding: 1.2rem 1.25rem;
+    padding-bottom: 10rem;
+    scroll-padding-bottom: 10rem;
+  }
+
+  .messageBubble {
+    max-width: min(78%, 36rem);
+  }
+
+  .chatComposerDock {
+    position: absolute;
+    bottom: 0;
+    padding: 0 1rem 1rem;
+  }
+
+  .composer {
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

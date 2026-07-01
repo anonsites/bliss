@@ -1,0 +1,21 @@
+{
+  "name": "Bliss",
+  "short_name": "Bliss",
+  "description": "Hookup with locals nearby.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#00f0ff",
+  "icons": [
+    {
+      "src": "/images/bliss_icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/bliss_icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
