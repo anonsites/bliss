@@ -13,9 +13,19 @@ interface DropCardProps {
   onClose: () => void;
 }
 
+function getDropOwnerName(drop: InsiderDrop) {
+  const candidate = drop.ownerName?.trim();
+
+  if (candidate) {
+    return candidate;
+  }
+
+  return drop.source === "promo" ? "Bliss creator" : "New drop";
+}
+
 export function DropCard({ drop, onAutoAdvance, onClose }: DropCardProps) {
   const isVideo = drop.media.type === "video";
-  const ownerName = drop.ownerName ?? "New drop";
+  const ownerName = getDropOwnerName(drop);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);

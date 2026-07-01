@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   DetailPanePlaceholder,
   DropPlaceholderIcon,
@@ -12,9 +12,55 @@ import styles from "./drops.module.css";
 
 type DropFilter = "new" | "seen" | "live";
 
+const DROPS_PROGRESS_STORAGE_KEY = "bliss:drops-progress";
+
+function getStoredDropsProgress() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const stored = window.sessionStorage.getItem(DROPS_PROGRESS_STORAGE_KEY);
+
+    if (!stored) {
+      return null;
+    }
+
+    const parsed = JSON.parse(stored) as {
+      activeFilter?: DropFilter;
+      seenDropIds?: string[];
+    };
+
+    return {
+      activeFilter: parsed.activeFilter === "seen" || parsed.activeFilter === "live" ? parsed.activeFilter : "new",
+      seenDropIds: Array.isArray(parsed.seenDropIds) ? parsed.seenDropIds : [],
+    };
+  } catch {
+    return null;
+  }
+}
+
+function saveDropsProgress(activeFilter: DropFilter, seenDropIds: Iterable<string>) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(
+      DROPS_PROGRESS_STORAGE_KEY,
+      JSON.stringify({
+        activeFilter,
+        seenDropIds: Array.from(seenDropIds),
+      }),
+    );
+  } catch {
+    // Ignore storage failures so the UI still works.
+  }
+}
+
 // New component for the "Free live cams" card
 function LiveCamsCard() {
-  const externalLink = "https://example.com/live-cams"; // Placeholder external link
+  const externalLink = "https://beeglivesex.com"; // Placeholder external link
   return (
     <a
       href={externalLink}
@@ -85,8 +131,20 @@ interface DropsPageClientProps {
 
 export function DropsPageClient({ initialDrops }: DropsPageClientProps) {
   const [selectedDropId, setSelectedDropId] = useState<string | null>(null);
-  const [seenDropIds, setSeenDropIds] = useState<Set<string>>(() => new Set());
-  const [activeFilter, setActiveFilter] = useState<DropFilter>("new");
+  const [activeFilter, setActiveFilter] = useState<DropFilter>(() => {
+    const storedProgress = getStoredDropsProgress();
+    return storedProgress?.activeFilter === "seen" || storedProgress?.activeFilter === "live"
+      ? storedProgress.activeFilter
+      : "new";
+  });
+  const [seenDropIds, setSeenDropIds] = useState<Set<string>>(() => {
+    const storedProgress = getStoredDropsProgress();
+    return new Set(storedProgress?.seenDropIds ?? []);
+  });
+
+  useEffect(() => {
+    saveDropsProgress(activeFilter, seenDropIds);
+  }, [activeFilter, seenDropIds]);
 
   const filteredDrops = useMemo(() => {
     if (activeFilter === "live") {
@@ -142,7 +200,7 @@ export function DropsPageClient({ initialDrops }: DropsPageClientProps) {
     />
   ) : (
     <DetailPanePlaceholder
-      description="Tap an insider drop to play it here."
+      description="Tap a drop to play it."
       icon={<DropPlaceholderIcon />}
       title="Select a drop to view"
       tone="emerald"
@@ -210,9 +268,9 @@ export function DropsPageClient({ initialDrops }: DropsPageClientProps) {
               <rect height="20" rx="3" width="14" x="5" y="2" />
               <path d="m10 9 5 3-5 3V9Z" fill="currentColor" stroke="none" />
             </svg>
-            <h2 className="text-lg font-semibold text-white">No drops right now</h2>
+            <h2 className="text-lg font-semibold text-white">Gotcha!</h2>
             <p className="mt-2 max-w-xs text-sm text-gray-400">
-              Drops will appear here when new media is published.
+              No drops available at the moment.
             </p>
           </div>
         )}

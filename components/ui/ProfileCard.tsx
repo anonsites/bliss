@@ -6,6 +6,10 @@ import uiStyles from "./ui.module.css";
 import { GreenRing } from "../layout";
 import type { HomeFeedProfile } from "@/features/discovery";
 import { VerifiedBadge } from "./VerifiedBadge";
+import { createClient } from "@/lib/supabase/client";
+import { resolveCloudinaryMediaUrl } from "@/lib/cloudinary";
+
+const playfulTexts = ["Gotcha!", "Damn!", "You got this!"];
 
 interface ProfileCardProps {
   /** 
@@ -30,6 +34,8 @@ export function ProfileCard({
   children,
 }: ProfileCardProps) {
   const [imageIndex, setImageIndex] = useState(0);
+  const [playfulTextIndex, setPlayfulTextIndex] = useState(0);
+  const [currentUserAvatarUrl, setCurrentUserAvatarUrl] = useState<string | null>(null);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
 
@@ -42,6 +48,50 @@ export function ProfileCard({
         document.body.classList.remove("profile-card-viewing");
       };
     }
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadCurrentUserAvatar = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user?.id) {
+        if (isMounted) {
+          setCurrentUserAvatarUrl(null);
+        }
+        return;
+      }
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      const avatarUrl = data?.avatar_url
+        ? resolveCloudinaryMediaUrl(data.avatar_url, "image") ?? data.avatar_url
+        : null;
+
+      if (isMounted) {
+        setCurrentUserAvatarUrl(avatarUrl);
+      }
+    };
+
+    loadCurrentUserAvatar();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const timerId = window.setInterval(() => {
+      setPlayfulTextIndex((previous) => (previous + 1) % playfulTexts.length);
+    }, 2200);
+
+    return () => window.clearInterval(timerId);
   }, []);
 
   const isOnline = profile.activityStatus.trim().toLowerCase() === "online";
@@ -103,55 +153,75 @@ export function ProfileCard({
   const isMediaSlide = !isProfileInfoSlide;
   const shouldShowCounter = hasImages && !isProfileInfoSlide;
 
-  const displayPhoneNumber = phoneNumber ? phoneNumber : "Hidden";
   const cleanWhatsAppNumber = phoneNumber ? phoneNumber.replace(/[^0-9]/g, "") : "";
   const whatsappLink = cleanWhatsAppNumber ? `https://wa.me/${cleanWhatsAppNumber}` : "";
 
   const ProfileInfoSlide = (
-    <div className={`${uiStyles.profileInfoSlide} bg-gray-900`}>
-      <div className={`${uiStyles.profileInfoContent} flex min-h-full flex-col justify-between`}>
-        <div className="space-y-4">
-          {/* Contact Card */}
-          <div className={uiStyles.profileInfoCard}>
-            <div className={uiStyles.profileInfoCardText}>
-              <span className={uiStyles.profileInfoLabel}>Contact</span>
-              <strong className={uiStyles.profileInfoValue}>{displayPhoneNumber}</strong>
-            </div>
-            <div className={uiStyles.profileInfoCardIcon}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.35 1.9.66 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.23a2 2 0 0 1 2.11-.45c.91.31 1.85.53 2.81.66A2 2 0 0 1 22 16.92Z"/></svg>
-            </div>
+    <div className={`${uiStyles.profileInfoSlide} bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.2),transparent_45%),linear-gradient(180deg,#0f172a_0%,#020617_100%)]`}>
+      <div className={`${uiStyles.profileInfoContent} flex min-h-full flex-col justify-center px-5 py-6`}>
+        <div className="flex flex-col items-center text-center">
+          <div className="relative mb-4 h-24 w-24">
+            <div className="absolute inset-0 rounded-full border border-white/10 bg-white/10" />
+            {currentUserAvatarUrl ? (
+              <div className="absolute left-0 top-0 h-16 w-16 overflow-hidden rounded-full border-4 border-slate-950 shadow-2xl">
+                <Image src={currentUserAvatarUrl} alt="Your profile" fill sizes="64px" style={{ objectFit: "cover" }} />
+              </div>
+            ) : null}
+            {avatarImage ? (
+              <div className="absolute bottom-0 right-0 h-16 w-16 overflow-hidden rounded-full border-4 border-slate-950 shadow-2xl">
+                <Image src={avatarImage} alt={profile.username} fill sizes="64px" style={{ objectFit: "cover" }} />
+              </div>
+            ) : null}
           </div>
 
-          {whatsappLink ? (
-            <a
-              href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-3xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400"
+          <p className="text-2xl font-semibold text-white">{playfulTexts[playfulTextIndex]}</p>
+
+          <div className="mt-5 flex w-full flex-col gap-3">
+            {phoneNumber ? (
+              <div className="flex items-center justify-center gap-2">
+                {whatsappLink ? (
+                  <a
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+                      <path d="M17.472 14.382c-.297-.148-1.758-.867-2.03-.967-.273-.099-.472-.148-.672.149-.198.297-.768.967-.941 1.166-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.173.198-.298.298-.497.099-.198.05-.372-.025-.52-.074-.149-.672-1.612-.92-2.213-.242-.58-.487-.5-.672-.51-.173-.01-.372-.01-.57-.01-.198 0-.52.074-.792.372-.273.297-1.04 1.015-1.04 2.479 0 1.463 1.064 2.875 1.213 3.074.148.198 2.095 3.2 5.076 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.007-1.413.248-.697.248-1.296.173-1.413-.074-.118-.273-.198-.57-.347z"/>
+                      <path d="M20.52 3.48A10.374 10.374 0 0 0 12.033.5C6.22.5 1.57 5.147 1.57 10.958c0 1.93.504 3.807 1.462 5.459L.5 23.5l7.54-1.977a10.443 10.443 0 0 0 4.993 1.24h.007c5.813 0 10.462-4.647 10.462-10.46 0-2.796-1.092-5.417-3.01-7.427zM12.033 21.19a9.44 9.44 0 0 1-4.84-1.315l-.346-.206-4.484 1.176 1.2-4.383-.225-.357A9.344 9.344 0 0 1 2.69 10.958c0-5.123 4.171-9.294 9.343-9.294 2.497 0 4.84.973 6.614 2.742 1.776 1.77 2.749 4.112 2.749 6.606 0 5.122-4.171 9.293-9.343 9.293z"/>
+                    </svg>
+                    <span>WhatsApp</span>
+                  </a>
+                ) : null}
+
+                {cleanWhatsAppNumber ? (
+                  <a
+                    href={`tel:${cleanWhatsAppNumber}`}
+                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.35 1.9.66 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.23a2 2 0 0 1 2.11-.45c.91.31 1.85.53 2.81.66A2 2 0 0 1 22 16.92Z" />
+                    </svg>
+                    <span>Call</span>
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
+
+            <button
+              type="button"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-500/15 px-4 py-3 text-sm font-semibold text-emerald-200 backdrop-blur transition hover:bg-emerald-500/25"
+              onClick={(event) => event.stopPropagation()}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-                <path d="M17.472 14.382c-.297-.148-1.758-.867-2.03-.967-.273-.099-.472-.148-.672.149-.198.297-.768.967-.941 1.166-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.173.198-.298.298-.497.099-.198.05-.372-.025-.52-.074-.149-.672-1.612-.92-2.213-.242-.58-.487-.5-.672-.51-.173-.01-.372-.01-.57-.01-.198 0-.52.074-.792.372-.273.297-1.04 1.015-1.04 2.479 0 1.463 1.064 2.875 1.213 3.074.148.198 2.095 3.2 5.076 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.007-1.413.248-.697.248-1.296.173-1.413-.074-.118-.273-.198-.57-.347z"/>
-                <path d="M20.52 3.48A10.374 10.374 0 0 0 12.033.5C6.22.5 1.57 5.147 1.57 10.958c0 1.93.504 3.807 1.462 5.459L.5 23.5l7.54-1.977a10.443 10.443 0 0 0 4.993 1.24h.007c5.813 0 10.462-4.647 10.462-10.46 0-2.796-1.092-5.417-3.01-7.427zM12.033 21.19a9.44 9.44 0 0 1-4.84-1.315l-.346-.206-4.484 1.176 1.2-4.383-.225-.357A9.344 9.344 0 0 1 2.69 10.958c0-5.123 4.171-9.294 9.343-9.294 2.497 0 4.84.973 6.614 2.742 1.776 1.77 2.749 4.112 2.749 6.606 0 5.122-4.171 9.293-9.343 9.293z"/>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                <path d="M12 5v14" />
+                <path d="M5 12h14" />
               </svg>
-              <span>Message on WhatsApp</span>
-            </a>
-          ) : null}
-        </div>
-
-        <div className="mt-6 rounded-t-[1.75rem] bg-linear-to-t from-sky-950 via-sky-700 to-sky-500 p-4 text-white shadow-[0_-20px_60px_rgba(15,23,42,0.65)]">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="mt-2 text-lg font-semibold">{profile.isVerified ? "Verified Profile" : "Not Verified"}</p>
-            </div>
-            <div className="rounded-full bg-white/10 p-2 shadow-lg shadow-sky-900/40">
-              <VerifiedBadge className="h-7 w-7 text-white" />
-            </div>
+              <span>Add to wishlist</span>
+            </button>
           </div>
-          <p className="mt-3 text-sm leading-6 text-sky-100/90">
-            {profile.isVerified
-              ? "This profile is verified, we recommend interacting with verified profiles."
-              : "This profile is not yet verified. Please exercise caution when sharing personal details."}
-          </p>
         </div>
       </div>
     </div>

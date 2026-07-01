@@ -46,9 +46,27 @@ function requireFile(value: FormDataEntryValue | null, label: string) {
   return value;
 }
 
+function getFileExtension(fileName: string) {
+  return fileName.split(".").pop()?.toLowerCase() ?? "";
+}
+
+function isLikelyImage(file: File) {
+  const normalizedType = file.type.toLowerCase();
+  const extension = getFileExtension(file.name);
+
+  return normalizedType.startsWith("image/") || ["jpg", "jpeg", "png", "webp", "gif", "heic", "heif"].includes(extension);
+}
+
+function isLikelyVideo(file: File) {
+  const normalizedType = file.type.toLowerCase();
+  const extension = getFileExtension(file.name);
+
+  return normalizedType.startsWith("video/") || ["mp4", "mov", "webm", "m4v", "avi"].includes(extension);
+}
+
 function validateImage(file: File) {
-  if (!file.type.startsWith("image/")) {
-    throw new Error("Profile picture must be an image.");
+  if (!isLikelyImage(file)) {
+    throw new Error("Profile picture must be an image file.");
   }
 
   if (file.size > 10 * 1024 * 1024) {
@@ -57,8 +75,8 @@ function validateImage(file: File) {
 }
 
 function validateVideo(file: File) {
-  if (!file.type.startsWith("video/")) {
-    throw new Error("Drop media must be a video.");
+  if (!isLikelyVideo(file)) {
+    throw new Error("Drop media must be a video file.");
   }
 
   if (file.size > 80 * 1024 * 1024) {

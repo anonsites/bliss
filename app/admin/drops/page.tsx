@@ -42,8 +42,7 @@ export default async function AdminDropsPage() {
   return (
     <AdminShell>
       <div style={styles.card}>
-        <h1 style={styles.title}>Drops</h1>
-        <p style={styles.subtitle}>Publish short creator drops and monitor view counts.</p>
+        <h1 style={styles.title}>POST DROPS</h1>
         <AdminDropsClient initialDrops={drops} />
       </div>
     </AdminShell>

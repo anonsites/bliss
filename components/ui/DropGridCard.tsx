@@ -10,6 +10,16 @@ interface DropGridCardProps {
   variant?: "preview" | "shell";
 }
 
+function getDropOwnerName(drop: InsiderDrop) {
+  const candidate = drop.ownerName?.trim();
+
+  if (candidate) {
+    return candidate;
+  }
+
+  return drop.source === "promo" ? "Bliss creator" : "New drop";
+}
+
 function chunkDrops(drops: InsiderDrop[], size: number) {
   const pages: InsiderDrop[][] = [];
 
@@ -43,7 +53,7 @@ function DropGridTile({
   tileKey: string;
 }) {
   const thumbnailSrc = drop.media.thumbnailSrc ?? drop.media.src;
-  const ownerName = drop.ownerName ?? "New drop";
+  const ownerName = getDropOwnerName(drop);
 
   return (
     <button
@@ -104,8 +114,6 @@ function DropGridTile({
           ) : null}
           <h3>{ownerName}</h3>
         </div>
-
-        <p>{drop.timeLabel}</p>
       </div>
     </button>
   );
