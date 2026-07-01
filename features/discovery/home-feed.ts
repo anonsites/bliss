@@ -9,10 +9,12 @@ import {
   type Coordinates,
   type ResolvedGeoContext,
 } from "@/lib/geo";
+import { resolveCloudinaryMediaUrl } from "@/lib/cloudinary";
 import { isSupabaseConfigured, querySupabaseRest, requestSupabaseRest } from "@/lib/supabase";
 import {
   type HomeFeedLocation,
   type HomeFeedPayload,
+  type HomeFeedPromoDrop,
   type HomeFeedProfile,
   deriveImages,
 } from "@/features/discovery";
@@ -62,6 +64,15 @@ type UserLocationRow = {
   longitude: number | null;
   updated_at: string | null;
   user_id: string;
+};
+
+type PromoDropRow = {
+  created_at: string | null;
+  id: string;
+  media_type: string | null;
+  media_url: string | null;
+  owner_avatar_url: string | null;
+  owner_name: string | null;
 };
 
 type DiscoveryCandidate = {
@@ -256,6 +267,41 @@ function mapCandidateToProfile(
   };
 }
 
+function mapPromoDropForHome(row: PromoDropRow): HomeFeedPromoDrop | null {
+  const media = normalizeMediaItem(row.id, row.media_url, row.created_at, row.media_type);
+  const avatarUrl = resolveCloudinaryMediaUrl(row.owner_avatar_url, "image");
+
+  if (!media || !avatarUrl) {
+    return null;
+  }
+
+  return {
+    avatarUrl,
+    id: row.id,
+    isVerified: true,
+    mediaSrc: media.src,
+    mediaType: media.type,
+    posterSrc: media.thumbnailSrc ?? media.src,
+    username: row.owner_name?.trim() || "Bliss creator",
+  };
+}
+
+async function getPromoDropsPreview(limit = 8) {
+  const rows = await querySupabaseRest<PromoDropRow[]>(
+    "promo_drops",
+    new URLSearchParams({
+      is_published: "eq.true",
+      limit: String(limit),
+      order: "created_at.desc",
+      select: "id,owner_name,owner_avatar_url,media_url,media_type,created_at",
+    }),
+  );
+
+  return rows
+    .map(mapPromoDropForHome)
+    .filter((drop): drop is HomeFeedPromoDrop => Boolean(drop));
+}
+
 async function fetchDiscoveryCandidates(
   limit: number,
   viewerLocation: ResolvedGeoContext | null,
@@ -373,12 +419,16 @@ export async function getHomeFeedPreview({
         fetchedAt,
         location: toLocationMetadata(viewerLocation),
       },
+      promoDrops: [],
       profiles: [],
     };
   }
 
   try {
-    const candidates = await fetchDiscoveryCandidates(DISCOVERY_CANDIDATE_LIMIT, viewerLocation);
+    const [candidates, promoDrops] = await Promise.all([
+      fetchDiscoveryCandidates(DISCOVERY_CANDIDATE_LIMIT, viewerLocation),
+      getPromoDropsPreview(8),
+    ]);
     const profiles = candidates
       .toSorted((left, right) => profileScore(right, viewerLocation) - profileScore(left, viewerLocation))
       .map((candidate) => mapCandidateToProfile(candidate, viewerLocation))
@@ -390,6 +440,7 @@ export async function getHomeFeedPreview({
         fetchedAt,
         location: toLocationMetadata(viewerLocation),
       },
+      promoDrops,
       profiles,
     };
   } catch {
@@ -399,6 +450,7 @@ export async function getHomeFeedPreview({
         fetchedAt,
         location: toLocationMetadata(viewerLocation),
       },
+      promoDrops: [],
       profiles: [],
     };
   }

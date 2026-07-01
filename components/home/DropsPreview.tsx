@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { DropPlaceholderIcon } from "@/components/ui/PlaceholderIcons";
 import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
+import { resolveCloudinaryMediaUrl, resolveCloudinaryVideoPoster } from "@/lib/cloudinary";
 import styles from "./home.module.css";
 
 export type DropUser = {
@@ -67,65 +68,75 @@ export function DropsPreview({ drops, location, onDropClick }: DropsPreviewProps
         </p>
       </header>
       <div className={styles['drops-grid']}>
-        {drops.map((drop) => (
-          <article
-            className={styles['drops-card']}
-            key={drop.id}
-            onClick={onDropClick}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onDropClick?.();
-              }
-            }}
-            onMouseEnter={() => handleCardMouseEnter(drop.id)}
-            onMouseLeave={() => handleCardMouseLeave(drop.id)}
-            role="button"
-            tabIndex={0}
-          >
-            {drop.mediaType === "video" ? (
-              <video
-                className={styles['drops-card__image']}
-                loop
-                muted
-                playsInline
-                poster={drop.posterSrc}
-                preload="metadata"
-                ref={(el) => {
-                  if (el) {
-                    videoRefs.current.set(drop.id, el);
-                  }
-                }}
-              >
-                <source src={drop.mediaSrc} type="video/mp4" />
-              </video>
-            ) : (
-              <Image
-                alt={drop.username}
-                className={styles['drops-card__image']}
-                fill
-                sizes="(min-width: 1280px) 11vw, (min-width: 1024px) 14vw, 44vw"
-                src={drop.mediaSrc}
-              />
-            )}
-            <div className={styles['drops-card__info']}>
-              <div className={`${styles['drops-card__name']} flex items-center min-w-0 gap-1.5`}>
-                <div className={styles['drops-card__avatar']}>
-                  <Image
-                    alt=""
-                    fill
-                    sizes="24px"
-                    src={drop.avatarUrl}
-                  />
+        {drops.map((drop) => {
+          const resolvedMediaSrc = drop.mediaType === "video"
+            ? resolveCloudinaryMediaUrl(drop.mediaSrc, "video") ?? drop.mediaSrc
+            : resolveCloudinaryMediaUrl(drop.mediaSrc, "image") ?? drop.mediaSrc;
+          const resolvedPosterSrc = resolveCloudinaryVideoPoster(drop.posterSrc)
+            ?? resolveCloudinaryMediaUrl(drop.posterSrc, "image")
+            ?? drop.posterSrc;
+          const resolvedAvatarUrl = resolveCloudinaryMediaUrl(drop.avatarUrl, "image") ?? drop.avatarUrl;
+
+          return (
+            <article
+              className={styles['drops-card']}
+              key={drop.id}
+              onClick={onDropClick}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onDropClick?.();
+                }
+              }}
+              onMouseEnter={() => handleCardMouseEnter(drop.id)}
+              onMouseLeave={() => handleCardMouseLeave(drop.id)}
+              role="button"
+              tabIndex={0}
+            >
+              {drop.mediaType === "video" ? (
+                <video
+                  className={styles['drops-card__image']}
+                  loop
+                  muted
+                  playsInline
+                  poster={resolvedPosterSrc}
+                  preload="metadata"
+                  ref={(el) => {
+                    if (el) {
+                      videoRefs.current.set(drop.id, el);
+                    }
+                  }}
+                >
+                  <source src={resolvedMediaSrc} type="video/mp4" />
+                </video>
+              ) : (
+                <Image
+                  alt={drop.username}
+                  className={styles['drops-card__image']}
+                  fill
+                  sizes="(min-width: 1280px) 11vw, (min-width: 1024px) 14vw, 44vw"
+                  src={resolvedMediaSrc}
+                />
+              )}
+              <div className={styles['drops-card__info']}>
+                <div className={`${styles['drops-card__name']} flex items-center min-w-0 gap-1.5`}>
+                  <div className={styles['drops-card__avatar']}>
+                    <Image
+                      alt=""
+                      fill
+                      sizes="24px"
+                      src={resolvedAvatarUrl}
+                    />
+                  </div>
+                  <span className="truncate flex-1">
+                    {drop.username.charAt(0).toUpperCase() + drop.username.slice(1)}
+                  </span>
+                  {drop.isVerified && <VerifiedBadge className="flex-shrink-0 h-3.5 w-3.5" />}
                 </div>
-                <span className="truncate flex-1">
-                  {drop.username.charAt(0).toUpperCase() + drop.username.slice(1)}
-                </span>
-                {drop.isVerified && <VerifiedBadge className="flex-shrink-0 h-3.5 w-3.5" />}
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
     </section>
   );

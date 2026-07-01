@@ -26,6 +26,16 @@ export interface HomeFeedMeta {
   location: HomeFeedLocation;
 }
 
+export interface HomeFeedPromoDrop {
+  avatarUrl: string;
+  id: string;
+  isVerified?: boolean;
+  mediaSrc: string;
+  mediaType: "image" | "video";
+  posterSrc: string;
+  username: string;
+}
+
 export interface HomeFeedProfile {
   activityStatus: string;
   age: number | null;
@@ -49,12 +59,16 @@ export interface InsiderDrop {
   caption?: string;
   createdAt?: string;
   id: string;
+  ownerAvatarUrl?: string;
+  ownerName?: string;
+  source?: "promo" | "user";
   media: ProfileMediaItem;
   timeLabel: string;
 }
 
 export interface HomeFeedPayload {
   meta: HomeFeedMeta;
+  promoDrops: HomeFeedPromoDrop[];
   profiles: HomeFeedProfile[];
 }
 

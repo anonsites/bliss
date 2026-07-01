@@ -5,7 +5,7 @@ import {
   DetailPanePlaceholder,
   DropPlaceholderIcon,
 } from "@/components/ui/PlaceholderIcons";
-import { DropCard } from "@/components/ui/DropCard";
+import { DropCard } from "@/components/ui/DropPlayer";
 import { DropGridCard } from "@/components/ui/DropGridCard";
 import type { InsiderDrop } from "@/features/discovery";
 import styles from "./drops.module.css";
@@ -106,6 +106,16 @@ export function DropsPageClient({ initialDrops }: DropsPageClientProps) {
       next.add(drop.id);
       return next;
     });
+
+    if (drop.source === "promo") {
+      fetch("/api/drops/views", {
+        body: JSON.stringify({ dropId: drop.id, source: drop.source }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }).catch(() => {
+        // View tracking should not block playback.
+      });
+    }
   };
 
   const handleAutoAdvance = () => {

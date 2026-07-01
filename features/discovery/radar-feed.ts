@@ -49,6 +49,7 @@ type RadarProfileRow = {
 type RadarUserRow = {
   id: string;
   phone_number: string | null;
+  role: string | null;
 };
 
 type RadarUserSettingsRow = {
@@ -96,6 +97,10 @@ function formatRadarDistance(distanceKm: number) {
   }
 
   return `${Math.round(distanceKm)}km away`;
+}
+
+function isPrivilegedRole(role: string | null | undefined) {
+  return role === "admin" || role === "moderator";
 }
 
 function mapRadarProfile(
@@ -293,7 +298,7 @@ async function enrichAndMapProfiles(candidateRows: RadarProfileRow[], userId: st
     querySupabaseRest<RadarUserRow[]>(
       "users",
       new URLSearchParams({
-        select: "id,phone_number",
+        select: "id,phone_number,role",
         id: userFilter,
       }),
     ),
@@ -342,14 +347,18 @@ async function enrichAndMapProfiles(candidateRows: RadarProfileRow[], userId: st
   const currentUser = await querySupabaseRest<RadarUserRow[]>(
     "users",
     new URLSearchParams({
-      select: "id,phone_number",
+      select: "id,phone_number,role",
       id: `eq.${userId}`,
       limit: "1",
     }),
   );
   const currentUserPhone = currentUser[0]?.phone_number ?? null;
+  const visibleCandidateRows = candidateRows.filter((profile) => {
+    const candidateRole = userRows.find((row) => row.id === profile.user_id)?.role ?? null;
+    return !isPrivilegedRole(candidateRole);
+  });
 
-  return candidateRows
+  return visibleCandidateRows
     .map((profile) =>
       mapRadarProfile(
         { ...profile, is_wishlisted: wishlistSet.has(profile.user_id) },

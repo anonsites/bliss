@@ -145,9 +145,65 @@ create policy "Users can manage own settings"
 -- 10. DROP VIEWS
 alter table public.drop_views enable row level security;
 
-create policy "Users can manage own drop views"
-  on public.drop_views for all
-  using (auth.uid() = user_id);
+create policy "Users can record their own drop views"
+  on public.drop_views for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can view their own drop views or the owner of the drop"
+  on public.drop_views for select
+  using (
+    auth.uid() = user_id
+    or exists (
+      select 1 from public.drops d
+      where d.id = drop_views.drop_id
+        and d.user_id = auth.uid()
+    )
+  );
+
+-- 10b. PROMO DROPS (ADMIN-PUBLISHED CONTENT)
+alter table public.promo_drops enable row level security;
+alter table public.promo_drop_views enable row level security;
+
+create policy "Published promo drops are viewable by everyone"
+  on public.promo_drops for select
+  using (is_published = true);
+
+create policy "Admins can manage promo drops"
+  on public.promo_drops for all
+  using (
+    exists (
+      select 1 from public.users u
+      where u.id = auth.uid()
+        and u.role in ('admin', 'moderator')
+    )
+  )
+  with check (
+    exists (
+      select 1 from public.users u
+      where u.id = auth.uid()
+        and u.role in ('admin', 'moderator')
+    )
+  );
+
+create policy "Authenticated users can insert promo drop views"
+  on public.promo_drop_views for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can view promo drop views they created or the owner/admin can inspect them"
+  on public.promo_drop_views for select
+  using (
+    auth.uid() = user_id
+    or exists (
+      select 1 from public.promo_drops p
+      where p.id = promo_drop_views.promo_drop_id
+        and p.created_by = auth.uid()
+    )
+    or exists (
+      select 1 from public.users u
+      where u.id = auth.uid()
+        and u.role in ('admin', 'moderator')
+    )
+  );
 
 -- 11. BLOCKS & HIDDEN CONTACTS
 alter table public.blocks enable row level security;

@@ -11,6 +11,10 @@ export default async function RadarPage() {
     redirect("/");
   }
 
+  if (authenticatedUser.role === "admin" || authenticatedUser.role === "moderator") {
+    redirect("/admin");
+  }
+
   const radarFeed = await getRadarFeedForUser(authenticatedUser.id);
 
   if (radarFeed.error?.includes("Enable location")) {

@@ -22,6 +22,7 @@ function getErrorMessage(error: unknown) {
 type PublicUser = {
   id: string;
   profile_completed_at: string | null;
+  role: string | null;
 };
 
 export async function POST(request: NextRequest) {
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
       new URLSearchParams({
         id: `eq.${authUser.id}`,
         limit: "1",
-        select: "id,profile_completed_at",
+        select: "id,profile_completed_at,role",
       }),
     );
     const user = users[0];
@@ -92,7 +93,12 @@ export async function POST(request: NextRequest) {
       userAgent: request.headers.get("user-agent"),
     });
     const response = NextResponse.json<AuthActionResponse>({
-      redirectTo: user.profile_completed_at ? "/radar" : "/checkpoint",
+      redirectTo:
+        user.role === "admin" || user.role === "moderator"
+          ? "/admin"
+          : user.profile_completed_at
+            ? "/radar"
+            : "/checkpoint",
       userId: user.id,
     });
 

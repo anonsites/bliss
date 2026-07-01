@@ -125,6 +125,8 @@ export function getNotificationActionPath(
       return chatId ? `/messages/${chatId}` : "/messages";
 
     case "nearby_user":
+      return "/radar";
+
     case "profile_view":
       return targetUserId ? `/profile/${targetUserId}` : "/radar";
 

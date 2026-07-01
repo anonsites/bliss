@@ -25,6 +25,17 @@ export function LoginModal({ onClose, onSwitchToRegister }: LoginModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const redirectAfterAuth = (destination: string) => {
+    onClose();
+
+    if (typeof window !== "undefined") {
+      window.setTimeout(() => {
+        router.replace(destination);
+      }, 0);
+    } else {
+      router.replace(destination);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,9 +82,7 @@ export function LoginModal({ onClose, onSwitchToRegister }: LoginModalProps) {
         message: "Welcome back!",
         duration: 3000,
       });
-      onClose();
-      router.push(payload.redirectTo ?? "/radar");
-      router.refresh();
+      redirectAfterAuth(payload.redirectTo ?? "/radar");
     } catch {
       setError("Unable to sign in right now.");
       addToast({

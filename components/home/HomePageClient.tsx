@@ -73,6 +73,10 @@ function buildNearbyUsers(feed: HomeFeedPayload) {
 }
 
 function buildDropsUsers(feed: HomeFeedPayload) {
+  if (feed.promoDrops.length > 0) {
+    return feed.promoDrops;
+  }
+
   if (feed.profiles.length === 0) {
     return [];
   }

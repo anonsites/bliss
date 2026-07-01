@@ -30,6 +30,18 @@ export function RegisterModal({ onClose, onSwitchToLogin }: RegisterModalProps) 
   const [error, setError] = useState<string | null>(null);
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
 
+  const redirectAfterAuth = (destination: string) => {
+    onClose();
+
+    if (typeof window !== "undefined") {
+      window.setTimeout(() => {
+        router.replace(destination);
+      }, 0);
+    } else {
+      router.replace(destination);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -76,7 +88,7 @@ export function RegisterModal({ onClose, onSwitchToLogin }: RegisterModalProps) 
         password,
         phoneNumber: value,
       });
-      router.push("/checkpoint");
+      redirectAfterAuth("/checkpoint");
     } catch {
       setError("Unable to continue with sign up right now.");
       addToast({

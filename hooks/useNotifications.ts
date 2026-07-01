@@ -11,32 +11,30 @@ export function useNotifications() {
   const supabase = createClient();
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     const fetchUnreadCounts = async () => {
-      // Fetch total unread notifications
-      const { count: totalCount } = await supabase
-        .from("notifications")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .eq("is_read", false);
+      const [{ count: totalCount }, { count: messageCount }] = await Promise.all([
+        supabase
+          .from("notifications")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .eq("is_read", false),
+        supabase
+          .from("messages")
+          .select("*", { count: "exact", head: true })
+          .neq("sender_id", user.id)
+          .neq("status", "read"),
+      ]);
 
       setUnreadCount(totalCount || 0);
-
-      // Check for unread message-type notifications specifically
-      const { count: messageCount } = await supabase
-        .from("notifications")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .eq("is_read", false)
-        .eq("type", "message");
-
       setHasUnreadMessages((messageCount || 0) > 0);
     };
 
     fetchUnreadCounts();
 
-    // Subscribe to notification changes
     const channel = supabase
       .channel(`unread_counts_${user.id}`)
       .on(
@@ -47,7 +45,16 @@ export function useNotifications() {
           table: "notifications",
           filter: `user_id=eq.${user.id}`,
         },
-        () => fetchUnreadCounts()
+        () => fetchUnreadCounts(),
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "messages",
+        },
+        () => fetchUnreadCounts(),
       )
       .subscribe();
 

@@ -2,6 +2,7 @@ export type {
   HomeFeedLocation,
   HomeFeedMeta,
   HomeFeedPayload,
+  HomeFeedPromoDrop,
   HomeFeedProfile,
   InsiderDrop,
   MediaSource,

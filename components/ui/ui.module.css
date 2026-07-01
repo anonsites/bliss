@@ -725,7 +725,8 @@
 }
 
 .media-card__media img {
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
 }
 
 .media-card__scrim {
@@ -754,6 +755,38 @@
 .media-card__bottom {
   position: absolute;
   z-index: 4;
+}
+
+.media-card__controls {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 5;
+  display: flex;
+  gap: 10px;
+}
+
+.media-card__control-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(11, 11, 15, 0.72);
+  color: var(--text-primary);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+.media-card__control-button:hover {
+  background: rgba(20, 20, 28, 0.9);
+}
+
+.media-card__control-button svg {
+  width: 20px;
+  height: 20px;
 }
 
 .media-card__top {
@@ -977,14 +1010,14 @@
 .media-card__counter {
   position: absolute;
   right: auto;
-  bottom: calc(env(safe-area-inset-bottom) + 92px);
+  bottom: calc(env(safe-area-inset-bottom) + 104px);
   left: 18px;
   z-index: 3;
 }
 
 @media (min-width: 1024px) {
   .media-card__counter {
-    bottom: clamp(70px, 8.5vh, 96px);
+    bottom: clamp(78px, 8.5vh, 112px);
     left: clamp(14px, 1.6vw, 18px);
   }
 }

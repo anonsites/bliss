@@ -31,6 +31,7 @@ type UserRecord = {
   last_login_at: string | null;
   phone_number: string;
   profile_completed_at: string | null;
+  role: string | null;
 };
 
 type SessionRecord = {
@@ -53,6 +54,7 @@ export interface AuthenticatedUser {
   phoneNumber: string;
   profile: ProfileRecord | null;
   profileCompletedAt: string | null;
+  role: string | null;
 }
 
 function nowIso() {
@@ -286,12 +288,12 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
   }
 
   const [users, profiles] = await Promise.all([
-    querySupabaseRest<Array<Pick<UserRecord, "id" | "phone_number" | "profile_completed_at">>>(
+    querySupabaseRest<Array<Pick<UserRecord, "id" | "phone_number" | "profile_completed_at" | "role">>>(
       "users",
       new URLSearchParams({
         id: `eq.${session.user_id}`,
         limit: "1",
-        select: "id,phone_number,profile_completed_at",
+        select: "id,phone_number,profile_completed_at,role",
       }),
     ),
     querySupabaseRest<ProfileRecord[]>(
@@ -315,5 +317,6 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> 
     phoneNumber: user.phone_number,
     profile: profiles[0] ?? null,
     profileCompletedAt: user.profile_completed_at,
+    role: user.role,
   };
 }

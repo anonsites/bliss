@@ -82,7 +82,7 @@ export function ChatView({
       className={`${styles.chatView} flex flex-col overflow-hidden`}
       style={{ minHeight: viewportHeight ?? "100svh", height: viewportHeight ?? "100svh", maxHeight: viewportHeight ?? "100svh" }}
     >
-      <header className={`${styles.chatViewHeader} z-40 bg-black/60 backdrop-blur-xl border-b border-white/5 flex-shrink-0`}>
+      <header className={`${styles.chatViewHeader} z-40 bg-black/60 backdrop-blur-xl border-b border-white/5 shrink-0`}>
         <button
           className={`${styles.chatViewBackButton} lg:hidden`}
           onClick={onBack}
@@ -116,13 +116,13 @@ export function ChatView({
               ) : null}
             </div>
             <span className={styles.chatViewStatus}>
-              <span className={`${styles.chatViewStatusText} flex items-center gap-1 inline-flex ${chat.participant.activityStatus?.trim().toLowerCase() === "online" ? "text-emerald-400" : ""}`}>
+              <span className={`${styles.chatViewStatusText} items-center gap-1 inline-flex ${chat.participant.activityStatus?.trim().toLowerCase() === "online" ? "text-emerald-400" : ""}`}>
                 {chat.participant.activityStatus?.trim().toLowerCase() === "online" && (
                   <span className="inline-flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
                 )}
                 {chat.participant.activityStatus}
               </span>
-              <span className="mx-4 text-slate-400">|</span>
+              <span className={styles.chatViewStatusDivider}>|</span>
               <span>{chat.participant.locationLabel}</span>
             </span>
           </div>
@@ -150,7 +150,7 @@ export function ChatView({
         </div>
       </div>
       {/* Chat input dock, fixed at the bottom */}
-      <div className={`${styles.chatComposerDock} flex-shrink-0`}>
+      <div className={`${styles.chatComposerDock} shrink-0`}>
         <ChatInput
           disabled={composerDisabled || !onSendMessage || isLoading}
           isSending={isSending}

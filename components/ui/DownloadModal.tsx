@@ -37,9 +37,9 @@ function PlatformBadge({
   label: string;
 }) {
   return (
-    <div className="download-modal__platform">
-      <div className="download-modal__platform-badge">{children}</div>
-      <span>{label}</span>
+    <div className={uiStyles["download-modal__platform"]}>
+      <div className={uiStyles["download-modal__platform-icon"]}>{children}</div>
+      <span className={uiStyles["download-modal__platform-label"]}>{label}</span>
     </div>
   );
 }
@@ -68,34 +68,34 @@ export function DownloadModal({
   }, [onClose]);
 
   return (
-    <div className={`${uiStyles['modal-overlay']} ${uiStyles['modal-overlay--download']}`} onClick={onClose}>
+    <div className={`${uiStyles["modal-overlay"]} ${uiStyles["modal-overlay--download"]}`} onClick={onClose}>
       <section
         aria-labelledby={titleId}
         aria-modal="true"
-        className={`${uiStyles['modal-content']} download-modal`}
+        className={`${uiStyles["modal-content"]} ${uiStyles["download-modal"]}`}
         onClick={(event) => event.stopPropagation()}
         role="dialog"
       >
         <button
           aria-label="Close install dialog"
-          className="download-modal__close"
+          className={uiStyles["download-modal__close"]}
           onClick={onClose}
           type="button"
         >
           &times;
         </button>
 
-        <div className="download-modal__header">
-          <div className="download-modal__brand-row">
+        <div className={uiStyles["download-modal__header"]}>
+          <div className={uiStyles["download-modal__brand-row"]}>
             <PlatformBadge label="iOS">
-              <AppleIcon className="download-modal__platform-icon" />
+              <AppleIcon className={uiStyles["download-modal__platform-icon"]} />
             </PlatformBadge>
 
-            <div className="download-modal__logo-shell" aria-hidden="true">
-              <div className="download-modal__logo-ring" />
+            <div aria-hidden="true">
+              <div className={uiStyles["download-modal__logo-ring"]} />
               <Image
                 alt="Bliss logo"
-                className="download-modal__logo"
+                className={uiStyles["download-modal__logo"]}
                 height={76}
                 src="/images/bliss_icon.png"
                 width={76}
@@ -103,34 +103,34 @@ export function DownloadModal({
             </div>
 
             <PlatformBadge label="Android">
-              <AndroidIcon className="download-modal__platform-icon download-modal__platform-icon--android" />
+              <AndroidIcon className={uiStyles["download-modal__platform-icon"]} />
             </PlatformBadge>
           </div>
 
-          <div className="download-modal__copy">
-            <p className="download-modal__eyebrow">Install Bliss</p>
+          <div className={uiStyles["download-modal__copy"]}>
+            <p className={uiStyles["download-modal__eyebrow"]}>Install Bliss</p>
             <h2 id={titleId}>
               {isIOS ? "Get iOS app" : "Get Android app"}
             </h2>
           </div>
         </div>
 
-        <div className="download-modal__body">
-          <section className="download-modal__hint">
+        <div className={uiStyles["download-modal__body"]}>
+          <section className={uiStyles["download-modal__hint"]}>
             {isIOS ? (
-              <ol className="download-modal__steps">
+              <ol className={uiStyles["download-modal__steps"]}>
                 <li>Tap the Share button in Safari.</li>
                 <li>Select Add to Home Screen.</li>
                 <li>Confirm to save Bliss on your device.</li>
               </ol>
             ) : (
-              <ul className="download-modal__steps">
+              <ul className={uiStyles["download-modal__steps"]}>
                 <li>We are launching on Google playstore soon.</li>
               </ul>
             )}
           </section>
 
-          <label className="download-modal__toggle">
+          <label className={uiStyles["download-modal__toggle"]}>
             <input
               checked={neverShowAgain}
               onChange={(event) => onNeverShowAgainChange(event.target.checked)}
@@ -139,14 +139,14 @@ export function DownloadModal({
             <span>Don&apos;t remind me again!</span>
           </label>
 
-          <div className="download-modal__actions">
+          <div className={uiStyles["download-modal__actions"]}>
             {isIOS ? (
-              <button className="download-modal__primary" onClick={onClose} type="button">
+              <button className={uiStyles["download-modal__primary"]} onClick={onClose} type="button">
                 Got it
               </button>
             ) : (
               <button
-                className="download-modal__primary"
+                className={uiStyles["download-modal__primary"]}
                 disabled={isInstalling}
                 onClick={() => {
                   void onInstall();
@@ -157,7 +157,7 @@ export function DownloadModal({
               </button>
             )}
 
-            <button className="download-modal__secondary" onClick={onClose} type="button">
+            <button className={uiStyles["download-modal__secondary"]} onClick={onClose} type="button">
               Not now
             </button>
           </div>

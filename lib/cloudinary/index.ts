@@ -1,5 +1,3 @@
-import "server-only";
-
 import { createHash } from "node:crypto";
 import type { ProfileMediaType } from "@/features/discovery";
 
@@ -9,6 +7,8 @@ type CloudinaryResourceType = "image" | "video";
 export const CLOUDINARY_UPLOAD_FOLDERS = {
   drops: "users_content/drops",
   gallery: "users_content/gallery",
+  promoDrops: "promo_content/drops",
+  promoProfiles: "promo_content/profiles",
   profiles: "users_content/profiles",
 } as const;
 

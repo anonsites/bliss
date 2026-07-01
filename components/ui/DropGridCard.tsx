@@ -43,6 +43,7 @@ function DropGridTile({
   tileKey: string;
 }) {
   const thumbnailSrc = drop.media.thumbnailSrc ?? drop.media.src;
+  const ownerName = drop.ownerName ?? "New drop";
 
   return (
     <button
@@ -65,7 +66,7 @@ function DropGridTile({
       <div className="drop-grid-card__media">
         <Image
           src={thumbnailSrc}
-          alt={drop.caption ?? "New drop"}
+          alt={`${ownerName} drop`}
           fill
           sizes="(max-width: 1023px) 50vw, 22vw"
         />
@@ -81,7 +82,27 @@ function DropGridTile({
 
       <div className="drop-grid-card__meta">
         <div className="drop-grid-card__identity">
-          <h3>New drop</h3>
+          {drop.ownerAvatarUrl ? (
+            <span
+              style={{
+                borderRadius: "50%",
+                flexShrink: 0,
+                height: 28,
+                overflow: "hidden",
+                position: "relative",
+                width: 28,
+              }}
+            >
+              <Image
+                alt=""
+                fill
+                sizes="28px"
+                src={drop.ownerAvatarUrl}
+                style={{ objectFit: "cover" }}
+              />
+            </span>
+          ) : null}
+          <h3>{ownerName}</h3>
         </div>
 
         <p>{drop.timeLabel}</p>

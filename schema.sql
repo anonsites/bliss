@@ -148,6 +148,44 @@ create index if not exists drops_user_id_expires_at_idx
 create index if not exists drops_expires_at_idx
   on public.drops (expires_at);
 
+-- PROMO DROPS (ADMIN-PUBLISHED MODEL/CREATOR CONTENT)
+create table if not exists public.promo_drops (
+  id uuid primary key default gen_random_uuid(),
+  owner_name text not null,
+  owner_avatar_url text not null,
+  media_url text not null,
+  media_type text not null default 'video' check (media_type = 'video'),
+  caption text,
+  is_published boolean not null default true,
+  created_by uuid references public.users(id) on delete set null,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
+drop trigger if exists promo_drops_set_updated_at on public.promo_drops;
+create trigger promo_drops_set_updated_at
+before update on public.promo_drops
+for each row
+execute function public.set_updated_at();
+
+create index if not exists promo_drops_published_created_at_idx
+  on public.promo_drops (is_published, created_at desc);
+
+-- PROMO DROP VIEWS (ADMIN ANALYTICS ONLY)
+create table if not exists public.promo_drop_views (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.users(id) on delete cascade,
+  promo_drop_id uuid not null references public.promo_drops(id) on delete cascade,
+  created_at timestamptz not null default timezone('utc', now()),
+  unique (user_id, promo_drop_id)
+);
+
+create index if not exists promo_drop_views_drop_id_idx
+  on public.promo_drop_views (promo_drop_id);
+
+create index if not exists promo_drop_views_created_at_idx
+  on public.promo_drop_views (created_at);
+
 -- WISHLIST (LIKED/SAVED USERS FOR FUTURE INTERACTION)
 create table if not exists public.wishlist (
   id uuid primary key default gen_random_uuid(),
@@ -249,6 +287,9 @@ create table if not exists public.drop_views (
 
 create index if not exists drop_views_created_at_idx
   on public.drop_views (created_at);
+
+create index if not exists drop_views_drop_id_idx
+  on public.drop_views (drop_id);
 
 -- BLOCKED USERS
 create table if not exists public.blocks (
@@ -363,6 +404,23 @@ create index if not exists idx_notifications_type on public.notifications(type);
 create index if not exists notifications_reference_id_drop_view_idx
   on public.notifications (reference_id)
   where (type = 'drop_view');
+
+create or replace function public.admin_dashboard_stats()
+returns table (
+  total_users bigint,
+  active_users bigint,
+  total_drops bigint
+)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select
+    (select count(*) from public.users) as total_users,
+    (select count(*) from public.profiles where is_active = true) as active_users,
+    (select count(*) from public.drops) as total_drops;
+$$;
 
 -- RADAR (10KM / DIFFERENT-GENDER DISCOVERY)
 create or replace function public.get_radar_profiles(

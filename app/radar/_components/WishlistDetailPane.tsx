@@ -39,8 +39,10 @@ export function WishlistDetailPane({
         method: "POST",
       });
 
-      if (response.ok) {
-        router.push("/messages");
+      const payload = (await response.json()) as { chatId?: string; error?: string };
+
+      if (response.ok && payload.chatId) {
+        router.push(`/messages/${payload.chatId}`);
       }
     } catch (error) {
       console.error("Failed to start chat", error);

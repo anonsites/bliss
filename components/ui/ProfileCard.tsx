@@ -48,7 +48,7 @@ export function ProfileCard({
   const images = (profile.images?.length ?? 0) > 0 ? profile.images! : (profile.dropImages ?? []);
   const hasImages = images.length > 0;
   const currentImage = hasImages ? images[imageIndex] ?? images[0] : null;
-  const avatarImage = hasImages ? images[1] ?? images[0] : null;
+  const avatarImage = hasImages ? images[0] : null;
 
   const totalSlides = hasImages ? images.length + 1 : 1; // +1 for the profile info slide
 
@@ -101,6 +101,7 @@ export function ProfileCard({
   };
   const isProfileInfoSlide = hasImages && imageIndex === images.length;
   const isMediaSlide = !isProfileInfoSlide;
+  const shouldShowCounter = hasImages && !isProfileInfoSlide;
 
   const displayPhoneNumber = phoneNumber ? phoneNumber : "Hidden";
   const cleanWhatsAppNumber = phoneNumber ? phoneNumber.replace(/[^0-9]/g, "") : "";
@@ -260,9 +261,11 @@ export function ProfileCard({
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}>
-              <div className={uiStyles["media-card__counter"]}>
-                <span>{`${imageIndex + 1}/${totalSlides}`}</span>
-              </div>
+              {shouldShowCounter ? (
+                <div className={uiStyles["media-card__counter"]}>
+                  <span>{`${imageIndex + 1}/${totalSlides}`}</span>
+                </div>
+              ) : null}
 
               <div className={`${uiStyles["media-card__media"]} overflow-hidden bg-gray-900`}
                 style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -272,8 +275,9 @@ export function ProfileCard({
                       src={currentImage}
                       alt={profile.username}
                       fill
-                      sizes="(max-width: 960px) 100vw, 420px"
+                      sizes="(max-width: 767px) 100vw, (max-width: 1024px) 50vw, 420px"
                       priority
+                      style={{ objectFit: "contain", objectPosition: "center" }}
                     />
                   ) : (
                     isProfileInfoSlide ? ProfileInfoSlide : (

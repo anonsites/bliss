@@ -1,4 +1,4 @@
-1) Implement realtime messaging, ensure the top header remains sticky when mobile keyboard is opened.
+1) Implement realtime messaging, ensure the top header remains sticky when mobile keyboard is opened.✅
 
 2) Design well different parts of the app including the profile card last infomation slide that contain contacts and verification status
 

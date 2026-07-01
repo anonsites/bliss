@@ -15,6 +15,7 @@ import { ChatView } from "./ChatView";
 import styles from "./messages.module.css";
 
 type MessagesPageClientProps = {
+  initialChatId?: string | null;
   initialThreads: ChatThread[];
 };
 
@@ -33,11 +34,11 @@ function upsertThread(threads: ChatThread[], nextThread: ChatThread) {
   return [nextThread, ...threads.filter((thread) => thread.id !== nextThread.id)];
 }
 
-export function MessagesPageClient({ initialThreads }: MessagesPageClientProps) {
+export function MessagesPageClient({ initialChatId, initialThreads }: MessagesPageClientProps) {
   const { user } = useUser();
   const supabase = useMemo(() => createClient(), []);
   const [threads, setThreads] = useState(initialThreads);
-  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(initialChatId ?? null);
   const [activeConversation, setActiveConversation] = useState<ChatConversation | null>(null);
   const [isOpeningConversation, setIsOpeningConversation] = useState(false);
   const [isSendingMessage, setIsSendingMessage] = useState(false);
@@ -135,6 +136,23 @@ export function MessagesPageClient({ initialThreads }: MessagesPageClientProps) 
       supabase.removeChannel(channel);
     };
   }, [supabase, user?.id]);
+
+  useEffect(() => {
+    if (!initialChatId) {
+      return;
+    }
+
+    const matchingThread = threads.find((thread) => thread.id === initialChatId);
+    if (!matchingThread) {
+      return;
+    }
+
+    if (selectedChatId === initialChatId && activeConversation?.thread.id === initialChatId) {
+      return;
+    }
+
+    void handleChatSelect(matchingThread);
+  }, [activeConversation?.thread.id, initialChatId, selectedChatId, threads]);
 
   const handleChatSelect = async (chat: ChatThread) => {
     if (selectedChatId === chat.id && activeConversation?.thread.id === chat.id) {

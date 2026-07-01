@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
     const insertedMedia = await requestSupabaseRest<UserMediaRow[]>("user_media", {
       body: {
         user_id: authenticatedUser.id,
-        media_url: cloudinaryResult.secureUrl,
+        media_url: cloudinaryResult.publicId,
         media_type: "image",
         sort_order: nextSortOrder,
       },
@@ -196,7 +196,7 @@ export async function PATCH(request: NextRequest) {
     // Update in Supabase
     const updatedMedia = await requestSupabaseRest<UserMediaRow[]>("user_media", {
       body: {
-        media_url: cloudinaryResult.secureUrl,
+        media_url: cloudinaryResult.publicId,
       },
       headers: {
         Prefer: "return=representation",

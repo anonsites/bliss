@@ -10,6 +10,10 @@ export default async function HomePage() {
   const authenticatedUser = await getAuthenticatedUser();
 
   if (authenticatedUser) {
+    if (authenticatedUser.role === "admin" || authenticatedUser.role === "moderator") {
+      redirect("/admin");
+    }
+
     redirect("/radar");
   }
 

@@ -40,11 +40,13 @@ export function RadarDetailPane({
         method: "POST",
       });
 
-      if (!response.ok) {
+      const payload = (await response.json()) as { chatId?: string; error?: string };
+
+      if (!response.ok || !payload.chatId) {
         return;
       }
 
-      router.push("/messages");
+      router.push(`/messages/${payload.chatId}`);
     } catch {
       // Keep the interaction silent
     }
