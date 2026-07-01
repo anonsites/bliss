@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import Image from "next/image";
 import { DropPlaceholderIcon } from "@/components/ui/PlaceholderIcons";
 import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
@@ -30,31 +29,12 @@ interface DropsPreviewProps {
 }
 
 export function DropsPreview({ drops, location, onDropClick }: DropsPreviewProps) {
-  const videoRefs = useRef<Map<string, HTMLVideoElement>>(new Map());
-
   const getLocationName = () => {
     if (!location) return "Around You";
     return location.city || location.region || location.country || "Around You";
   };
 
   const locationName = getLocationName();
-
-  const handleCardMouseEnter = (dropId: string) => {
-    const video = videoRefs.current.get(dropId);
-    if (video) {
-      video.play().catch(() => {
-        // Silently fail if play is blocked
-      });
-    }
-  };
-
-  const handleCardMouseLeave = (dropId: string) => {
-    const video = videoRefs.current.get(dropId);
-    if (video) {
-      video.pause();
-      video.currentTime = 0;
-    }
-  };
 
   return (
     <section className={styles['drops-preview']} aria-label="Drops Preview">
@@ -88,24 +68,18 @@ export function DropsPreview({ drops, location, onDropClick }: DropsPreviewProps
                   onDropClick?.();
                 }
               }}
-              onMouseEnter={() => handleCardMouseEnter(drop.id)}
-              onMouseLeave={() => handleCardMouseLeave(drop.id)}
               role="button"
               tabIndex={0}
             >
               {drop.mediaType === "video" ? (
                 <video
+                  autoPlay
                   className={styles['drops-card__image']}
                   loop
                   muted
                   playsInline
                   poster={resolvedPosterSrc}
                   preload="metadata"
-                  ref={(el) => {
-                    if (el) {
-                      videoRefs.current.set(drop.id, el);
-                    }
-                  }}
                 >
                   <source src={resolvedMediaSrc} type="video/mp4" />
                 </video>

@@ -461,7 +461,7 @@ export function HomePageClient({ initialFeed }: HomePageClientProps) {
                 Create Account
               </button>
               <button
-                className={`${uiStyles['home-button']} ${uiStyles['home-button--ghost']}`}
+                className={`${uiStyles['home-button']} ${uiStyles['home-button--primary']}`}
                 onClick={() => openAuthModal("login")}
                 type="button"
               >

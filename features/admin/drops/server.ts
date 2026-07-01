@@ -2,6 +2,7 @@ import "server-only";
 
 import { CLOUDINARY_UPLOAD_FOLDERS, resolveCloudinaryMediaUrl, uploadFileToCloudinary } from "@/lib/cloudinary";
 import { countSupabaseRest, querySupabaseRest, requestSupabaseRest } from "@/lib/supabase";
+import { buildTrackPromoDropViewRequest } from "./view-tracking";
 
 export type AdminPromoDrop = {
   caption: string | null;
@@ -168,19 +169,7 @@ export async function createAdminPromoDrop(formData: FormData, adminUserId: stri
 }
 
 export async function trackPromoDropView(userId: string, promoDropId: string) {
-  await requestSupabaseRest("promo_drop_views", {
-    body: {
-      promo_drop_id: promoDropId,
-      user_id: userId,
-    },
-    headers: {
-      Prefer: "resolution=ignore-duplicates,return=minimal",
-    },
-    method: "POST",
-    searchParams: new URLSearchParams({
-      on_conflict: "user_id,promo_drop_id",
-    }),
-  });
+  await requestSupabaseRest("promo_drop_views", buildTrackPromoDropViewRequest(userId, promoDropId));
 }
 
 export async function countPromoDrops() {

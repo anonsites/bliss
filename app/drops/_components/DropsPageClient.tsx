@@ -131,16 +131,29 @@ interface DropsPageClientProps {
 
 export function DropsPageClient({ initialDrops }: DropsPageClientProps) {
   const [selectedDropId, setSelectedDropId] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<DropFilter>(() => {
+  const [activeFilter, setActiveFilter] = useState<DropFilter>("new");
+  const [seenDropIds, setSeenDropIds] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
     const storedProgress = getStoredDropsProgress();
-    return storedProgress?.activeFilter === "seen" || storedProgress?.activeFilter === "live"
-      ? storedProgress.activeFilter
-      : "new";
-  });
-  const [seenDropIds, setSeenDropIds] = useState<Set<string>>(() => {
-    const storedProgress = getStoredDropsProgress();
-    return new Set(storedProgress?.seenDropIds ?? []);
-  });
+
+    if (!storedProgress) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setActiveFilter(
+        storedProgress.activeFilter === "seen" || storedProgress.activeFilter === "live"
+          ? storedProgress.activeFilter
+          : "new",
+      );
+      setSeenDropIds(new Set(storedProgress.seenDropIds));
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, []);
 
   useEffect(() => {
     saveDropsProgress(activeFilter, seenDropIds);

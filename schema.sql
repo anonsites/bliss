@@ -176,8 +176,7 @@ create table if not exists public.promo_drop_views (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
   promo_drop_id uuid not null references public.promo_drops(id) on delete cascade,
-  created_at timestamptz not null default timezone('utc', now()),
-  unique (user_id, promo_drop_id)
+  created_at timestamptz not null default timezone('utc', now())
 );
 
 create index if not exists promo_drop_views_drop_id_idx

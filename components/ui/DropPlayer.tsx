@@ -29,6 +29,7 @@ export function DropCard({ drop, onAutoAdvance, onClose }: DropCardProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [isBuffering, setIsBuffering] = useState(false);
 
   const togglePlayback = async () => {
     const video = videoRef.current;
@@ -86,27 +87,52 @@ export function DropCard({ drop, onAutoAdvance, onClose }: DropCardProps) {
       return;
     }
 
-    const handlePlay = () => setIsPlaying(true);
+    const handlePlay = () => {
+      setIsPlaying(true);
+      setIsBuffering(false);
+    };
     const handlePause = () => setIsPlaying(false);
     const handleEnded = () => {
       setIsPlaying(false);
+      setIsBuffering(false);
       onAutoAdvance();
     };
     const handleMuted = () => setIsMuted(video.muted);
+    const handleWaiting = () => setIsBuffering(true);
+    const handleCanPlay = () => setIsBuffering(false);
+    const handleStalled = () => setIsBuffering(true);
+    const handlePlaying = () => setIsBuffering(false);
 
     video.addEventListener("play", handlePlay);
     video.addEventListener("pause", handlePause);
     video.addEventListener("ended", handleEnded);
     video.addEventListener("volumechange", handleMuted);
+    video.addEventListener("waiting", handleWaiting);
+    video.addEventListener("canplay", handleCanPlay);
+    video.addEventListener("canplaythrough", handleCanPlay);
+    video.addEventListener("stalled", handleStalled);
+    video.addEventListener("playing", handlePlaying);
 
-    setIsPlaying(!video.paused);
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        setIsPlaying(false);
+      });
+    }
+
     setIsMuted(video.muted);
+    setIsPlaying(!video.paused);
 
     return () => {
       video.removeEventListener("play", handlePlay);
       video.removeEventListener("pause", handlePause);
       video.removeEventListener("ended", handleEnded);
       video.removeEventListener("volumechange", handleMuted);
+      video.removeEventListener("waiting", handleWaiting);
+      video.removeEventListener("canplay", handleCanPlay);
+      video.removeEventListener("canplaythrough", handleCanPlay);
+      video.removeEventListener("stalled", handleStalled);
+      video.removeEventListener("playing", handlePlaying);
     };
   }, [drop.id, isVideo, onAutoAdvance]);
 
@@ -126,6 +152,7 @@ export function DropCard({ drop, onAutoAdvance, onClose }: DropCardProps) {
               onClick={togglePlayback}
               onEnded={onAutoAdvance}
             />
+            {isBuffering ? <div className={uiStyles["media-card__buffer-bar"]} aria-hidden="true" /> : null}
             <div className={uiStyles["media-card__controls"]}>
               <button
                 type="button"
@@ -176,8 +203,7 @@ export function DropCard({ drop, onAutoAdvance, onClose }: DropCardProps) {
           />
         )}
       </div>
-      {/* Removed scrim for DropCard as per design changes to media-card__top */}
-      {/* <div className={uiStyles["media-card__scrim"]} /> */}
+      <div className={uiStyles["media-card__scrim"]} aria-hidden="true" />
 
       <div className={uiStyles["media-card__top"]}>
         {drop.ownerAvatarUrl ? (

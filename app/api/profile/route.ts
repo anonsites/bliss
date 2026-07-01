@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildPhoneEmailAlias, calculateBirthdateFromAge, getAuthenticatedUser, normalizeGender, normalizePhoneNumber } from "@/features/auth/server";
 import type { ProfileGender } from "@/features/profile/models";
+import { resolveCloudinaryMediaUrl } from "@/lib/cloudinary";
 import { requestSupabaseRest } from "@/lib/supabase";
 
 type ProfileUpdateResponse = {
@@ -16,6 +17,14 @@ type ProfileUpdateResponse = {
   };
 };
 
+type ProfileMeResponse = {
+  error?: string;
+  profile?: {
+    avatarUrl: string | null;
+    username: string | null;
+  };
+};
+
 function getErrorMessage(error: unknown) {
   if (!(error instanceof Error) || !error.message) {
     return "Unable to update your profile right now.";
@@ -26,6 +35,48 @@ function getErrorMessage(error: unknown) {
   }
 
   return error.message;
+}
+
+export async function GET(): Promise<NextResponse<ProfileMeResponse>> {
+  try {
+    const authenticatedUser = await getAuthenticatedUser();
+
+    if (!authenticatedUser) {
+      return NextResponse.json<ProfileMeResponse>(
+        { error: "You need to sign in again." },
+        { status: 401 },
+      );
+    }
+
+    const profileRows = await requestSupabaseRest<Array<{ avatar_url: string | null; username: string | null }>>(
+      "profiles",
+      {
+        method: "GET",
+        searchParams: new URLSearchParams({
+          limit: "1",
+          select: "avatar_url,username",
+          user_id: `eq.${authenticatedUser.id}`,
+        }),
+      },
+    );
+
+    const profile = profileRows?.[0];
+    const avatarUrl = profile?.avatar_url?.trim()
+      ? resolveCloudinaryMediaUrl(profile.avatar_url, "image") ?? profile.avatar_url
+      : null;
+
+    return NextResponse.json<ProfileMeResponse>({
+      profile: {
+        avatarUrl,
+        username: profile?.username?.trim() ?? null,
+      },
+    });
+  } catch (error) {
+    return NextResponse.json<ProfileMeResponse>(
+      { error: getErrorMessage(error) },
+      { status: 400 },
+    );
+  }
 }
 
 export async function PATCH(request: NextRequest) {

@@ -29,7 +29,7 @@ const styles = {
   },
   tabButtonActive: {
     background: "rgba(94,234,212,0.13)",
-    borderColor: "rgba(94,234,212,0.35)",
+    border: "1px solid rgba(94,234,212,0.35)",
     color: "#99f6e4",
   },
   avatar: {
@@ -56,8 +56,8 @@ const styles = {
     borderRadius: "10px",
     overflow: "hidden",
     background: "rgba(255,255,255,0.06)",
-    minHeight: "706px",
-    aspectRatio: "3 / 4",
+    height: "140px",
+    width: "100%",
     display: "grid",
     placeItems: "center",
     color: "#8ea2b8",
@@ -194,7 +194,7 @@ const styles = {
     borderRadius: "14px",
     overflow: "hidden",
     position: "relative" as const,
-    minHeight: "180px",
+    height: "150px",
     background: "rgba(255,255,255,0.04)",
     display: "grid",
     placeItems: "center",
@@ -340,7 +340,7 @@ export function AdminDropsClient({ initialDrops }: AdminDropsClientProps) {
                   <label style={styles.mediaCard}>
                     <div style={styles.mediaCardPreview}>
                       {avatarPreview ? (
-                        <Image alt="Selected avatar preview" fill sizes="180px" src={avatarPreview} style={{ objectFit: "cover" }} />
+                        <Image alt="Selected avatar preview" fill sizes="140px" src={avatarPreview} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
                       ) : (
                         <div style={styles.mediaCardPlaceholder}>Choose image</div>
                       )}
@@ -354,11 +354,11 @@ export function AdminDropsClient({ initialDrops }: AdminDropsClientProps) {
                 </label>
 
                 <label style={styles.label}>
-                  Post video
+                  Add video
                   <label style={styles.mediaCard}>
                     <div style={styles.mediaCardPreview}>
                       {videoPreview ? (
-                        <video muted playsInline preload="metadata" src={videoPreview} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <video muted playsInline preload="metadata" src={videoPreview} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                       ) : (
                         <div style={styles.mediaCardPlaceholder}>Select video</div>
                       )}
@@ -392,33 +392,33 @@ export function AdminDropsClient({ initialDrops }: AdminDropsClientProps) {
           {hasDrops ? (
             drops.map((drop) => (
               <article key={drop.id} style={styles.listCard}>
-                <div style={styles.publishedHeader}>
-                  <div style={styles.ownerRow}>
-                    <div style={styles.avatar}>
-                      <Image alt="" fill sizes="42px" src={drop.owner_avatar_url} style={{ objectFit: "cover" }} />
+                <div>
+                  <div style={styles.publishedHeader}>
+                    <div style={styles.ownerRow}>
+                      <div style={styles.avatar}>
+                        <Image alt="" fill sizes="42px" src={drop.owner_avatar_url} style={{ objectFit: "cover" }} />
+                      </div>
+                      <div>
+                        <div style={styles.rowTitle}>{drop.owner_name}</div>
+                        <div style={styles.rowMeta}>{new Date(drop.created_at).toLocaleDateString()}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div style={styles.rowTitle}>{drop.owner_name}</div>
-                      <div style={styles.rowMeta}>{new Date(drop.created_at).toLocaleDateString()}</div>
+                    <div style={styles.tags}>
+                      <span style={styles.tag}>Admin</span>
                     </div>
                   </div>
-                  <div style={styles.tags}>
-                    <span style={styles.tag}>Admin</span>
-                    <span style={styles.tag}>Creator</span>
+
+                  <div style={styles.thumbnail}>
+                    {drop.media_url ? (
+                      <video muted playsInline preload="metadata" src={drop.media_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    ) : (
+                      <div style={styles.thumbnailLabel}>No video available</div>
+                    )}
                   </div>
-                </div>
 
-                <div style={styles.thumbnail}>
-                  {drop.media_url ? (
-                    <video muted playsInline preload="metadata" src={drop.media_url} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  ) : (
-                    <div style={styles.thumbnailLabel}>No video available</div>
-                  )}
-                </div>
-
-                <div style={styles.publishedHeader}>
-                  <span style={styles.rowMeta}>Thumbnail preview</span>
-                  <span style={styles.views}>{drop.views.toLocaleString()} views</span>
+                  <div style={styles.publishedHeader}>
+                    <span style={styles.views}>{drop.views.toLocaleString()} views</span>
+                  </div>
                 </div>
               </article>
             ))

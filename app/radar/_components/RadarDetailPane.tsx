@@ -67,7 +67,12 @@ export function RadarDetailPane({
 
   return (
     <div className={styles.radarDetailPane}>
-      <ProfileCard locationLabel={profile.distance} profile={profile} phoneNumber={profile.phoneNumber}>
+      <ProfileCard
+        locationLabel={profile.distance}
+        profile={profile}
+        phoneNumber={profile.phoneNumber}
+        onSayHi={handleMessage}
+      >
         <ActionButtons
           isDisabled={mode === "explore"}
           isLiked={isLiked}

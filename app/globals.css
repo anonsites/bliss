@@ -78,7 +78,6 @@ h2 { font-size: 1.5rem; }
 h3 { font-size: 1.25rem; }
 
 p {
-  color: var(--text-primary);
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.5;
@@ -88,11 +87,9 @@ p {
    BUTTONS
 ========================= */
 button {
-  border: none;
-  outline: none;
   cursor: pointer;
+  font-family: inherit;
   font-weight: 500;
-  border-radius: 999px;
   transition: all 0.2s ease;
 }
 
@@ -243,7 +240,13 @@ button {
 /* =========================
    INPUTS
 ========================= */
-input, textarea {
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="search"],
+input[type="number"],
+textarea {
   width: 100%;
   padding: 0.7rem 0.9rem;
   border-radius: 12px;
@@ -254,7 +257,13 @@ input, textarea {
   transition: border 0.2s ease;
 }
 
-input:focus, textarea:focus {
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+input[type="search"]:focus,
+input[type="number"]:focus,
+textarea:focus {
   border-color: var(--highlight);
   box-shadow: 0 0 0 2px rgba(39, 214, 197, 0.25);
 }
@@ -1114,6 +1123,32 @@ input:focus, textarea:focus {
   margin-left: 2px;
 }
 
+@media (max-width: 767px) {
+  .grid-media-preview-badge {
+    width: 46px;
+    height: 46px;
+  }
+
+  .grid-media-preview-badge .grid-media-highlight__icon {
+    width: 16px;
+    height: 16px;
+    margin-left: 0;
+  }
+
+  .drop-grid-card__mobile {
+    gap: 10px;
+    padding: 0 12px 20px;
+    grid-auto-rows: minmax(0, auto);
+    min-height: 0;
+  }
+
+  .drop-grid-card__tile {
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+  }
+}
+
 .profile-grid-card {
   height: 100%;
 }
@@ -1136,17 +1171,27 @@ input:focus, textarea:focus {
 .profile-grid-card__mobile {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  height: 100%;
+  gap: 8px;
+  align-content: start;
+  grid-auto-rows: minmax(0, auto);
+  height: auto;
+  min-height: 0;
   overflow-y: auto;
   padding:
-    calc(env(safe-area-inset-top) + 16px)
-    16px
-    calc(env(safe-area-inset-bottom) + 116px);
+    calc(env(safe-area-inset-top) + 12px)
+    12px
+    calc(env(safe-area-inset-bottom) + 110px);
 }
 
 .profile-grid-card--shell .profile-grid-card__mobile {
-  padding: 16px 16px calc(env(safe-area-inset-bottom) + 16px);
+  padding: 12px 12px calc(env(safe-area-inset-bottom) + 12px);
+}
+
+@media (max-width: 767px) {
+  .profile-grid-card__tile {
+    aspect-ratio: 4 / 5 !important;
+    min-height: 0;
+  }
 }
 
 .profile-grid-card__page {
@@ -1164,7 +1209,7 @@ input:focus, textarea:focus {
   position: relative;
   overflow: hidden;
   border-radius: 22px;
-  background: #000;
+  background: linear-gradient(180deg, rgba(31, 41, 55, 0.85), rgba(15, 23, 42, 0.75));
 }
 
 .profile-grid-card__media,
@@ -1175,10 +1220,11 @@ input:focus, textarea:focus {
 
 .profile-grid-card__media img {
   object-fit: cover;
+  filter: brightness(1.05) contrast(1.05);
 }
 
 .profile-grid-card__scrim {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.74));
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.54));
 }
 
 .profile-grid-card__meta {
@@ -1190,6 +1236,7 @@ input:focus, textarea:focus {
   display: grid;
   gap: 4px;
   min-width: 0;
+  color: rgba(255, 255, 255, 0.96);
 }
 
 .profile-grid-card__identity {
@@ -1282,6 +1329,11 @@ input:focus, textarea:focus {
   gap: 12px;
   overflow-y: auto;
   padding: 0 16px 16px;
+}
+
+.drop-grid-card__tile {
+  border-radius: 22px;
+  min-height: 0;
 }
 
 .drop-grid-card--shell .drop-grid-card__mobile {

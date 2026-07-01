@@ -22,7 +22,13 @@ type PromoDropRow = {
   owner_name: string | null;
 };
 
-function mapRowToInsiderDrop(row: DropRow): InsiderDrop | null {
+type UserRow = {
+  id: string;
+  username: string | null;
+  avatar_url: string | null;
+};
+
+function mapRowToInsiderDrop(row: DropRow, owner?: UserRow | null): InsiderDrop | null {
   const media = normalizeMediaItem(
     row.id,
     row.media_url,
@@ -44,6 +50,8 @@ function mapRowToInsiderDrop(row: DropRow): InsiderDrop | null {
     createdAt: row.created_at ?? undefined,
     id: row.id,
     media,
+    ownerAvatarUrl: resolveCloudinaryMediaUrl(owner?.avatar_url, "image") ?? undefined,
+    ownerName: owner?.username?.trim() || undefined,
     source: "user",
     timeLabel,
   };
@@ -98,10 +106,23 @@ export async function getInsiderDropsFeed(
       ),
     ]);
 
+    const dropOwnerIds = Array.from(new Set(rows.map((drop) => drop.user_id))).filter(Boolean);
+    const owners = dropOwnerIds.length > 0
+      ? await querySupabaseRest<UserRow[]>(
+          "users",
+          new URLSearchParams({
+            select: "id,username,avatar_url",
+            id: `in.(${dropOwnerIds.join(",")})`,
+          }),
+        )
+      : [];
+
+    const ownerMap = new Map(owners.map((owner) => [owner.id, owner]));
+
     const userDrops = rows
       .filter(isActiveDrop)
       .sort((left, right) => parseDateValue(right.created_at) - parseDateValue(left.created_at))
-      .map(mapRowToInsiderDrop)
+      .map((row) => mapRowToInsiderDrop(row, ownerMap.get(row.user_id) ?? null))
       .filter((drop): drop is InsiderDrop => Boolean(drop));
     const promoDrops = promoRows
       .map(mapPromoRowToInsiderDrop)

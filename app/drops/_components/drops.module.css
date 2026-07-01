@@ -226,6 +226,38 @@
   scroll-padding-bottom: max(3rem, calc(env(safe-area-inset-bottom) + 2.5rem));
 }
 
+@media (max-width: 767px) {
+  :global(.drop-grid-card__mobile) {
+    gap: 14px;
+    padding: 0 12px 20px;
+    grid-auto-rows: minmax(0, auto);
+    min-height: 0;
+  }
+
+  :global(.drop-grid-card__tile) {
+    min-width: 0;
+    min-height: 0;
+    display: grid;
+    width: 100%;
+  }
+
+  :global(.drop-grid-card__tile .grid-media-preview-badge) {
+    width: 46px;
+    height: 46px;
+  }
+
+  :global(.drop-grid-card__tile .grid-media-preview-badge .grid-media-highlight__icon) {
+    width: 16px;
+    height: 16px;
+    margin-left: 0;
+  }
+
+  :global(.drop-grid-card__meta),
+  :global(.drop-grid-card__identity) {
+    min-width: 0;
+  }
+}
+
 .tutorialPane {
   display: flex;
   flex-direction: column;

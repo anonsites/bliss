@@ -61,7 +61,12 @@ export function WishlistDetailPane({
   }
 
   return (
-    <ProfileCard locationLabel={getLocationLabel(profile)} profile={profile} phoneNumber={profile.phoneNumber}>
+    <ProfileCard
+      locationLabel={getLocationLabel(profile)}
+      profile={profile}
+      phoneNumber={profile.phoneNumber}
+      onSayHi={handleMessage}
+    >
       <ActionButtons
         isDisabled={false}
         isLiked={isLiked}

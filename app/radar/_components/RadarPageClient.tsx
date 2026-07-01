@@ -3,6 +3,7 @@ import { RadarHeader } from "./RadarHeader";
 import { RadarFeed } from "./RadarFeed";
 import { RadarDetailPane } from "./RadarDetailPane";
 import { useRadarFeed } from "./useRadarFeed";
+import { AppPaneLayout } from "@/components/layout";
 import styles from "./radar.module.css";
 import type { HomeFeedProfile } from "@/features/discovery";
 
@@ -36,7 +37,7 @@ export function RadarPageClient({ initialError, profiles }: RadarPageClientProps
     feedProfiles.find((profile) => profile.id === selectedProfileId) ?? null;
 
   const secondaryPane = (
-    <>
+    <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden">
       <RadarHeader
         mode={mode}
         searchCity={searchCity}
@@ -59,7 +60,7 @@ export function RadarPageClient({ initialError, profiles }: RadarPageClientProps
           onLoadMore={handleLoadMore}
         />
       </div>
-    </>
+    </div>
   );
 
   const detailPane = (
@@ -73,23 +74,12 @@ export function RadarPageClient({ initialError, profiles }: RadarPageClientProps
   );
 
   return (
-    <div className="flex min-h-[calc(100dvh-92px-env(safe-area-inset-bottom))] w-full lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[1fr_360px] gap-0">
-      {/* Secondary Pane: Profile Grid - Full width on mobile, left side on desktop */}
-      <section className="flex flex-col min-h-0 min-w-0 flex-1 lg:flex-none lg:border-r lg:border-white/8 lg:bg-[linear-gradient(180deg,rgba(14,17,24,0.94),rgba(8,10,14,0.98))] overflow-hidden">
-        {secondaryPane}
-      </section>
-
-      {/* Detail Pane: Profile View - Hidden on mobile, side column on desktop */}
-      <section className="hidden lg:flex h-full flex-col min-h-0 min-w-0 bg-[linear-gradient(180deg,rgba(10,12,18,0.98),rgba(5,7,10,1))] overflow-hidden">
-        {detailPane}
-      </section>
-
-      {/* Mobile Detail Pane: Full-screen overlay on mobile when profile selected */}
-      {selectedProfile && (
-        <div className="fixed lg:hidden inset-0 z-50 flex flex-col min-h-0 min-w-0 bg-[linear-gradient(180deg,rgba(10,12,18,0.98),rgba(5,7,10,1))] overflow-hidden">
-          {detailPane}
-        </div>
-      )}
-    </div>
+    <AppPaneLayout
+      secondary={secondaryPane}
+      detail={detailPane}
+      detailActive={Boolean(selectedProfile)}
+      secondaryClassName="flex-1 min-h-0 min-w-0"
+      detailClassName="flex-1 min-h-0 min-w-0"
+    />
   );
 }
