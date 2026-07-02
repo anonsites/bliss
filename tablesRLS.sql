@@ -80,6 +80,14 @@ create policy "Users can view their chat participations"
   on public.chat_participants for select
   using (auth.uid() = user_id);
 
+create policy "Admins can view all chat participations"
+  on public.chat_participants for select
+  using (exists (
+    select 1 from public.users u
+    where u.id = auth.uid()
+      and u.role in ('admin', 'moderator')
+  ));
+
 create policy "Users can join chats"
   on public.chat_participants for insert
   with check (auth.uid() = user_id);
@@ -90,6 +98,14 @@ create policy "Users can view chats they belong to"
   using (exists (
     select 1 from public.chat_participants
     where chat_id = id and user_id = auth.uid()
+  ));
+
+create policy "Admins can view all chats"
+  on public.chats for select
+  using (exists (
+    select 1 from public.users u
+    where u.id = auth.uid()
+      and u.role in ('admin', 'moderator')
   ));
 
 create policy "Users can create chats"
@@ -109,6 +125,14 @@ create policy "Users can view messages in their chats"
   using (exists (
     select 1 from public.chat_participants
     where chat_id = messages.chat_id and user_id = auth.uid()
+  ));
+
+create policy "Admins can view all messages"
+  on public.messages for select
+  using (exists (
+    select 1 from public.users u
+    where u.id = auth.uid()
+      and u.role in ('admin', 'moderator')
   ));
 
 create policy "Users can insert messages in their chats"
@@ -199,6 +223,30 @@ create policy "Users can view promo drop views they created or the owner/admin c
         and p.created_by = auth.uid()
     )
     or exists (
+      select 1 from public.users u
+      where u.id = auth.uid()
+        and u.role in ('admin', 'moderator')
+    )
+  );
+
+-- PROMO PROFILES (ADMIN-PUBLISHED PROFILES)
+alter table public.promo_profiles enable row level security;
+
+create policy "Published promo profiles are viewable by everyone"
+  on public.promo_profiles for select
+  using (is_published = true);
+
+create policy "Admins can manage promo profiles"
+  on public.promo_profiles for all
+  using (
+    exists (
+      select 1 from public.users u
+      where u.id = auth.uid()
+        and u.role in ('admin', 'moderator')
+    )
+  )
+  with check (
+    exists (
       select 1 from public.users u
       where u.id = auth.uid()
         and u.role in ('admin', 'moderator')

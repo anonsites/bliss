@@ -9,6 +9,7 @@ const navItems = [
   { href: "/admin/users", label: "Users" },
   { href: "/admin/drops", label: "Drops" },
   { href: "/admin/messages", label: "Messages" },
+  { href: "/admin/promo-profiles", label: "Promo Profiles" },
 ];
 
 const styles = {

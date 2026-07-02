@@ -155,6 +155,39 @@ export function DropsPageClient({ initialDrops }: DropsPageClientProps) {
     };
   }, []);
 
+  // Fetch persisted seen drops for authenticated users and merge with session state.
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const res = await fetch("/api/drops/views");
+
+        if (!res.ok) return;
+
+        const data = await res.json().catch(() => null) as { seenDropIds?: string[] } | null;
+
+        if (cancelled) return;
+
+        const seen = Array.isArray(data?.seenDropIds) ? data!.seenDropIds : [];
+
+        if (seen.length === 0) return;
+
+        setSeenDropIds((current) => {
+          const next = new Set(current);
+          for (const id of seen) next.add(id);
+          return next;
+        });
+      } catch {
+        // ignore
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     saveDropsProgress(activeFilter, seenDropIds);
   }, [activeFilter, seenDropIds]);
@@ -178,15 +211,14 @@ export function DropsPageClient({ initialDrops }: DropsPageClientProps) {
       return next;
     });
 
-    if (drop.source === "promo") {
-      fetch("/api/drops/views", {
-        body: JSON.stringify({ dropId: drop.id, source: drop.source }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-      }).catch(() => {
-        // View tracking should not block playback.
-      });
-    }
+    // Persist seen state server-side for authenticated users (best-effort).
+    fetch("/api/drops/views", {
+      body: JSON.stringify({ dropId: drop.id, source: drop.source }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+    }).catch(() => {
+      // View tracking should not block playback.
+    });
   };
 
   const handleAutoAdvance = () => {

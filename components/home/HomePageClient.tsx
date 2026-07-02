@@ -18,7 +18,6 @@ import {
 } from "@/features/discovery";
 import { NearbyUsers } from "@/components/home/NearbyUsers";
 import { DropsPreview } from "@/components/home/DropsPreview";
-import { FALLBACK_NEARBY_USERS, FALLBACK_DROPS } from "@/lib/marketing-data";
 import { Skeleton } from "@/components/ui/LoadingShimmers";
 import { LoginModal } from "@/components/home/LoginModal";
 import { RegisterModal } from "@/components/home/RegisterModal";
@@ -51,25 +50,39 @@ function parseCoordinates(position: GeolocationPosition) {
 }
 
 function buildNearbyUsers(feed: HomeFeedPayload) {
-  if (feed.profiles.length === 0) {
-    return [];
+  // Prefer real profiles; fall back to promo drops when no profiles exist.
+  if (feed.profiles.length > 0) {
+    return Array.from({ length: Math.min(8, feed.profiles.length) }, (_, index) => {
+      const profile = feed.profiles[index % feed.profiles.length];
+      const primaryMedia = getPrimaryMediaItem(profile);
+
+      return {
+        avatarUrl: profile.images?.[0] ?? getPrimaryMediaThumbnail(profile),
+        distance: profile.locationLabel,
+        id: `${profile.id}-${index}`,
+        isVerified: profile.isVerified,
+        mediaSrc: primaryMedia?.src ?? getPrimaryMediaThumbnail(profile),
+        mediaType: primaryMedia?.type ?? "image",
+        posterSrc: getPrimaryMediaThumbnail(profile),
+        username: profile.username,
+      };
+    });
   }
 
-  return Array.from({ length: Math.min(8, feed.profiles.length) }, (_, index) => {
-    const profile = feed.profiles[index % feed.profiles.length];
-    const primaryMedia = getPrimaryMediaItem(profile);
+  if (feed.promoProfiles && feed.promoProfiles.length > 0) {
+    return feed.promoProfiles.slice(0, 8).map((p, index) => ({
+      avatarUrl: p.avatarUrl,
+      distance: "Featured",
+      id: `${p.id}-promo-${index}`,
+      isVerified: p.isVerified ?? true,
+      mediaSrc: p.mediaSrc ?? p.avatarUrl,
+      mediaType: p.mediaType ?? "image",
+      posterSrc: p.posterSrc ?? p.avatarUrl ?? "",
+      username: p.username,
+    }));
+  }
 
-    return {
-      avatarUrl: profile.images?.[0] ?? getPrimaryMediaThumbnail(profile),
-      distance: profile.locationLabel,
-      id: `${profile.id}-${index}`,
-      isVerified: profile.isVerified,
-      mediaSrc: primaryMedia?.src ?? getPrimaryMediaThumbnail(profile),
-      mediaType: primaryMedia?.type ?? "image",
-      posterSrc: getPrimaryMediaThumbnail(profile),
-      username: profile.username,
-    };
-  });
+  return [];
 }
 
 function buildDropsUsers(feed: HomeFeedPayload) {
@@ -437,8 +450,30 @@ export function HomePageClient({ initialFeed }: HomePageClientProps) {
 
   const nearbyUsers = buildNearbyUsers(deferredFeed);
   const dropUsers = buildDropsUsers(deferredFeed);
-  const displayNearby = blendWithFallback(nearbyUsers, FALLBACK_NEARBY_USERS);
-  const displayDrops = blendWithFallback(dropUsers, FALLBACK_DROPS);
+
+  const fallbackNearby = (deferredFeed.promoProfiles ?? []).slice(0, 8).map((p, i) => ({
+    avatarUrl: p.avatarUrl,
+    distance: "Featured",
+    id: `${p.id}-promo-${i}`,
+    isVerified: p.isVerified ?? true,
+    mediaSrc: p.mediaSrc ?? p.avatarUrl,
+    mediaType: (p.mediaType as "video" | "image") ?? "image",
+    posterSrc: p.posterSrc ?? p.avatarUrl ?? "",
+    username: p.username,
+  }));
+
+  const fallbackDrops = (deferredFeed.promoDrops ?? []).slice(0, 8).map((d) => ({
+    id: d.id,
+    mediaType: d.mediaType,
+    avatarUrl: d.avatarUrl,
+    posterSrc: d.posterSrc,
+    mediaSrc: d.mediaSrc,
+    username: d.username,
+    isVerified: d.isVerified ?? true,
+  }));
+
+  const displayNearby = blendWithFallback(nearbyUsers, fallbackNearby);
+  const displayDrops = blendWithFallback(dropUsers, fallbackDrops);
 
   const isIOS = typeof window !== "undefined" && isIOSDevice(window.navigator.userAgent);
 

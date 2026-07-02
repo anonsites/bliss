@@ -7,8 +7,14 @@ import {
 } from "@/lib/geo";
 import {
   type HomeFeedProfile,
+  type ProfileMediaItem,
+  type ProfileMediaType,
   deriveImages,
 } from "@/features/discovery";
+import {
+  resolveCloudinaryMediaUrl,
+  resolveCloudinaryVideoPoster,
+} from "@/lib/cloudinary";
 import { isSupabaseConfigured, querySupabaseRest, requestSupabaseRest } from "@/lib/supabase";
 import { notifyUserNearby } from "@/features/notifications/triggers";
 import {
@@ -60,6 +66,17 @@ type RadarUserSettingsRow = {
 type HiddenContactRow = {
   user_id: string;
   target_phone_number: string;
+};
+
+type PromoProfileRow = {
+  id: string;
+  username: string | null;
+  avatar_url: string;
+  media_url: string | null;
+  media_type: string | null;
+  gender: string;
+  phone_number: string | null;
+  is_verified: boolean | null;
 };
 
 type UserMediaRow = {
@@ -374,6 +391,68 @@ async function enrichAndMapProfiles(candidateRows: RadarProfileRow[], userId: st
     .filter((profile): profile is HomeFeedProfile => Boolean(profile));
 }
 
+function mapPromoProfileToHomeFeedProfile(row: PromoProfileRow): HomeFeedProfile {
+  const avatarUrl = resolveCloudinaryMediaUrl(row.avatar_url, "image") ?? row.avatar_url;
+  const mediaUrl = row.media_url
+    ? resolveCloudinaryMediaUrl(row.media_url, (row.media_type as ProfileMediaType) ?? "image") ?? row.media_url
+    : null;
+
+  const mediaItems: ProfileMediaItem[] = [];
+
+  if (mediaUrl) {
+    mediaItems.push({
+      id: `${row.id}-media`,
+      src: mediaUrl,
+      type: (row.media_type as ProfileMediaType) ?? "image",
+      thumbnailSrc: row.media_type === "video" ? resolveCloudinaryVideoPoster(row.media_url ?? undefined) ?? undefined : undefined,
+    });
+  } else {
+    mediaItems.push({
+      id: `${row.id}-avatar`,
+      src: avatarUrl,
+      type: "image",
+    });
+  }
+
+  const images = deriveImages(mediaItems);
+
+  return {
+    activityStatus: "Featured",
+    age: null,
+    distance: "Featured",
+    dropImages: [],
+    dropMedia: [],
+    id: row.id,
+    images,
+    isVerified: Boolean(row.is_verified),
+    locationLabel: "Featured",
+    media: mediaItems,
+    username: row.username?.trim() || "Bliss member",
+    userId: row.id,
+    phoneNumber: row.phone_number ?? undefined,
+    isPromoProfile: true,
+  };
+}
+
+async function fetchPromoRadarProfiles(limit = 8, userGender?: string | null) {
+  const rows = await querySupabaseRest<PromoProfileRow[]>(
+    "promo_profiles",
+    new URLSearchParams({
+      is_published: "eq.true",
+      limit: String(limit * 2), // Fetch double to account for filtering
+      order: "created_at.desc",
+      select: "id,username,avatar_url,media_url,media_type,gender,phone_number,is_verified",
+    }),
+  );
+
+  // Filter by opposite gender if user gender is provided
+  const filtered = userGender
+    ? rows.filter((row) => row.gender !== userGender)
+    : rows;
+
+  return filtered.slice(0, limit).map(mapPromoProfileToHomeFeedProfile);
+}
+
 export async function getRadarFeedForUser(
   userId: string,
 ): Promise<RadarFeedResult> {
@@ -402,14 +481,10 @@ export async function getRadarFeedForUser(
     }
 
     const candidateRows = await fetchNearbyRadarRows(userId);
-
-    if (candidateRows.length === 0) {
-      return {
-        profiles: [],
-      };
-    }
-
-    const profiles = await enrichAndMapProfiles(candidateRows, userId);
+    const [profiles, promoProfiles] = await Promise.all([
+      candidateRows.length > 0 ? enrichAndMapProfiles(candidateRows, userId) : Promise.resolve([]),
+      fetchPromoRadarProfiles(8, context.profile?.gender),
+    ]);
 
     // Notify about the closest 2 users found (if any)
     if (profiles.length > 0) {
@@ -420,7 +495,7 @@ export async function getRadarFeedForUser(
     }
 
     return {
-      profiles,
+      profiles: [...profiles, ...promoProfiles],
     };
   } catch (error) {
     console.error("Error loading nearby radar profiles:", error);
@@ -450,9 +525,12 @@ export async function searchProfilesByCity(
     }
 
     const candidateRows = await fetchCitySearchRadarRows(userId, city);
-    const profiles = await enrichAndMapProfiles(candidateRows, userId);
+    const [profiles, promoProfiles] = await Promise.all([
+      enrichAndMapProfiles(candidateRows, userId),
+      fetchPromoRadarProfiles(8, context.profile?.gender),
+    ]);
 
-    return { profiles };
+    return { profiles: [...profiles, ...promoProfiles] };
   } catch {
     return {
       error: "Search failed.",
@@ -480,9 +558,12 @@ export async function getExploreFeedForUser(
     }
 
     const candidateRows = await fetchExploreRadarRows(userId);
-    const profiles = await enrichAndMapProfiles(candidateRows, userId);
+    const [profiles, promoProfiles] = await Promise.all([
+      enrichAndMapProfiles(candidateRows, userId),
+      fetchPromoRadarProfiles(8, context.profile?.gender),
+    ]);
 
-    return { profiles };
+    return { profiles: [...profiles, ...promoProfiles] };
   } catch {
     return {
       error: "Explore could not load profiles right now.",

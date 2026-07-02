@@ -185,6 +185,33 @@ create index if not exists promo_drop_views_drop_id_idx
 create index if not exists promo_drop_views_created_at_idx
   on public.promo_drop_views (created_at);
 
+-- PROMO PROFILES (ADMIN-PUBLISHED PROMO/FEATURED PROFILES)
+create table if not exists public.promo_profiles (
+  id uuid primary key default gen_random_uuid(),
+  username text not null,
+  avatar_url text not null,
+  media_url text not null,
+  media_type text not null default 'image',
+  phone_number text,
+  city text,
+  gender text not null default 'female' check (gender in ('male', 'female')),
+  is_verified boolean not null default false,
+  bio text,
+  is_published boolean not null default true,
+  created_by uuid references public.users(id) on delete set null,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
+);
+
+drop trigger if exists promo_profiles_set_updated_at on public.promo_profiles;
+create trigger promo_profiles_set_updated_at
+before update on public.promo_profiles
+for each row
+execute function public.set_updated_at();
+
+create index if not exists promo_profiles_published_created_at_idx
+  on public.promo_profiles (is_published, created_at desc);
+
 -- WISHLIST (LIKED/SAVED USERS FOR FUTURE INTERACTION)
 create table if not exists public.wishlist (
   id uuid primary key default gen_random_uuid(),

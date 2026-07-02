@@ -302,6 +302,47 @@ async function getPromoDropsPreview(limit = 8) {
     .filter((drop): drop is HomeFeedPromoDrop => Boolean(drop));
 }
 
+type PromoProfileRow = {
+  id: string;
+  username: string | null;
+  avatar_url: string | null;
+  media_url: string | null;
+  media_type: string | null;
+  gender: string;
+  phone_number: string | null;
+  is_verified: boolean | null;
+};
+
+function mapPromoProfileForHome(row: PromoProfileRow) {
+  const mediaSrc = row.media_url ?? row.avatar_url ?? null;
+
+  return {
+    avatarUrl: row.avatar_url ? resolveCloudinaryMediaUrl(row.avatar_url, "image") ?? row.avatar_url : "",
+    gender: row.gender,
+    id: row.id,
+    isVerified: Boolean(row.is_verified),
+    mediaSrc: mediaSrc ? resolveCloudinaryMediaUrl(mediaSrc, (row.media_type as "image" | "video") ?? "image") ?? mediaSrc : null,
+    mediaType: (row.media_type as "image" | "video") ?? "image",
+    posterSrc: mediaSrc ?? row.avatar_url ?? null,
+    username: row.username?.trim() || "Bliss creator",
+    phoneNumber: row.phone_number ?? undefined,
+  };
+}
+
+async function getPromoProfilesPreview(limit = 8) {
+  const rows = await querySupabaseRest<PromoProfileRow[]>(
+    "promo_profiles",
+    new URLSearchParams({
+      is_published: "eq.true",
+      limit: String(limit),
+      order: "created_at.desc",
+      select: "id,username,avatar_url,media_url,media_type,gender,phone_number,is_verified",
+    }),
+  );
+
+  return rows.map(mapPromoProfileForHome).filter(Boolean);
+}
+
 async function fetchDiscoveryCandidates(
   limit: number,
   viewerLocation: ResolvedGeoContext | null,
@@ -425,10 +466,12 @@ export async function getHomeFeedPreview({
   }
 
   try {
-    const [candidates, promoDrops] = await Promise.all([
+    const [candidates, promoDropsRaw, promoProfiles] = await Promise.all([
       fetchDiscoveryCandidates(DISCOVERY_CANDIDATE_LIMIT, viewerLocation),
       getPromoDropsPreview(8),
+      getPromoProfilesPreview(8),
     ]);
+    const promoDrops = promoDropsRaw;
     const profiles = candidates
       .toSorted((left, right) => profileScore(right, viewerLocation) - profileScore(left, viewerLocation))
       .map((candidate) => mapCandidateToProfile(candidate, viewerLocation))
@@ -441,6 +484,7 @@ export async function getHomeFeedPreview({
         location: toLocationMetadata(viewerLocation),
       },
       promoDrops,
+      promoProfiles,
       profiles,
     };
   } catch {

@@ -215,8 +215,7 @@ export function ProfileCard({
             {onSayHi ? (
               <button
                 type="button"
-                className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-full bg-linear-to-r from-sky-500 to-indigo-500 px-5 py-5 text-sm font-bold text-white shadow-lg shadow-sky-500/20 transition-all duration-300 hover:from-sky-400 hover:to-indigo-400 hover:scale-[1.02] active:scale-[0.98]"
-                style={{ padding: "20px" }}
+                className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-full border border-emerald-400/70 bg-transparent px-4 py-3 text-sm font-bold text-emerald-200 transition-all duration-300 hover:bg-emerald-500/10 hover:border-emerald-300 hover:text-white active:scale-[0.98]"
                 onClick={(event) => {
                   event.stopPropagation();
                   onSayHi();
@@ -237,8 +236,7 @@ export function ProfileCard({
                     href={whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex flex-1 min-w-0 items-center justify-center gap-2 rounded-full bg-linear-to-r from-emerald-500 to-teal-500 px-5 py-5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:from-emerald-400 hover:to-teal-400 hover:scale-[1.02] active:scale-[0.98]"
-                    style={{ padding: "20px" }}
+                    className="inline-flex flex-1 min-w-0 items-center justify-center gap-2 rounded-full border border-emerald-400/70 bg-transparent px-4 py-3 text-sm font-bold text-emerald-200 transition-all duration-300 hover:bg-emerald-500/10 hover:border-emerald-300 hover:text-white active:scale-[0.98]"
                     onClick={(event) => event.stopPropagation()}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
@@ -267,8 +265,7 @@ export function ProfileCard({
 
             <button
               type="button"
-              className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/5 px-5 py-5 text-sm font-bold text-emerald-350 backdrop-blur-md transition-all duration-300 hover:bg-emerald-500/10 hover:border-emerald-400/30 hover:scale-[1.02] active:scale-[0.98]"
-              style={{ padding: "20px" }}
+              className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-full border border-emerald-400/50 bg-transparent px-4 py-3 text-sm font-bold text-emerald-200 backdrop-blur-md transition-all duration-300 hover:bg-emerald-500/10 hover:border-emerald-400/70 active:scale-[0.98]"
               onClick={(event) => event.stopPropagation()}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
@@ -314,7 +311,7 @@ export function ProfileCard({
         <div className={`${uiStyles["media-card__top"]} shrink-0`} style={{ padding: '1rem', backgroundColor: '#111827' }}>
           {avatar}
           <div className={uiStyles["media-card__profile"]}>
-            <div className={`${uiStyles["media-card__identity-row"]} flex items-center min-w-0 gap-2`}>
+            <div className={`${uiStyles["media-card__identity-row"]} flex items-center min-w-0`}>
               <h2 className="truncate flex-1">{profile.username}</h2>
               {profile.isVerified ? (
                 <VerifiedBadge className="w-5 h-5" />
@@ -361,7 +358,7 @@ export function ProfileCard({
       <div className={`${uiStyles["media-card__top"]} shrink-0`} style={{ padding: '1rem', backgroundColor: '#111827' }}>
         {profile.hasDrop ? <GreenRing mode="fill">{avatar}</GreenRing> : avatar}
         <div className={uiStyles["media-card__profile"]}>
-          <div className={`${uiStyles["media-card__identity-row"]} flex items-center min-w-0 gap-2`}>
+          <div className={`${uiStyles["media-card__identity-row"]} flex items-center min-w-0`}>
             <h2 className="truncate flex-1">{profile.username}</h2>
             {profile.isVerified ? (
               <VerifiedBadge className="w-5 h-5" />

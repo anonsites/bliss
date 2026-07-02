@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { trackPromoDropView } from "@/features/admin/drops/server";
 import { getAuthenticatedUser } from "@/features/auth/server";
+import { querySupabaseRest, requestSupabaseRest } from "@/lib/supabase";
 
 export async function POST(request: NextRequest) {
   const user = await getAuthenticatedUser();
@@ -12,6 +13,19 @@ export async function POST(request: NextRequest) {
   const payload = await request.json().catch(() => null) as { dropId?: string; source?: string } | null;
 
   if (!payload?.dropId || payload.source !== "promo") {
+    // If it's not a promo drop, try to record it in the generic `drop_views` table
+    if (payload?.dropId) {
+      try {
+        await requestSupabaseRest("drop_views", {
+          body: { user_id: user.id, drop_id: payload.dropId },
+          headers: { Prefer: "return=minimal" },
+          method: "POST",
+        });
+      } catch (err) {
+        // Ignore DB errors so the UI doesn't break for users.
+      }
+    }
+
     return NextResponse.json({ ok: true });
   }
 
@@ -23,5 +37,24 @@ export async function POST(request: NextRequest) {
       { error: error instanceof Error ? error.message : "Failed to track view." },
       { status: 500 },
     );
+  }
+}
+
+export async function GET() {
+  const user = await getAuthenticatedUser();
+
+  if (!user) {
+    return NextResponse.json({ seenDropIds: [] });
+  }
+
+  try {
+    const rows = await querySupabaseRest<{ drop_id: string }[]>(
+      "drop_views",
+      new URLSearchParams({ select: "drop_id", user_id: `eq.${user.id}` }),
+    );
+
+    return NextResponse.json({ seenDropIds: rows.map((r) => r.drop_id) });
+  } catch (error) {
+    return NextResponse.json({ seenDropIds: [] });
   }
 }

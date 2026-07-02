@@ -26,7 +26,7 @@ export function WishlistDetailPane({
   const router = useRouter();
 
   const handleMessage = async () => {
-    if (!profile) {
+    if (!profile || profile.isPromoProfile) {
       return;
     }
 
@@ -65,14 +65,14 @@ export function WishlistDetailPane({
       locationLabel={getLocationLabel(profile)}
       profile={profile}
       phoneNumber={profile.phoneNumber}
-      onSayHi={handleMessage}
+      onSayHi={profile.isPromoProfile ? undefined : handleMessage}
     >
       <ActionButtons
-        isDisabled={false}
+        isDisabled={profile.isPromoProfile}
         isLiked={isLiked}
         onGridClick={onClose}
-        onLikeClick={onLike}
-        onMessageClick={handleMessage}
+        onLikeClick={profile.isPromoProfile ? undefined : onLike}
+        onMessageClick={profile.isPromoProfile ? undefined : handleMessage}
       />
     </ProfileCard>
   );

@@ -36,6 +36,17 @@ export interface HomeFeedPromoDrop {
   username: string;
 }
 
+export interface HomeFeedPromoProfile {
+  avatarUrl: string;
+  id: string;
+  isVerified?: boolean;
+  mediaSrc: string | null;
+  mediaType?: "image" | "video";
+  posterSrc?: string | null;
+  username: string;
+  phoneNumber?: string;
+}
+
 export interface HomeFeedProfile {
   activityStatus: string;
   age: number | null;
@@ -53,6 +64,7 @@ export interface HomeFeedProfile {
   userId: string;
   phoneNumber?: string;
   isWishlisted?: boolean;
+  isPromoProfile?: boolean;
 }
 
 export interface InsiderDrop {
@@ -69,6 +81,7 @@ export interface InsiderDrop {
 export interface HomeFeedPayload {
   meta: HomeFeedMeta;
   promoDrops: HomeFeedPromoDrop[];
+  promoProfiles?: HomeFeedPromoProfile[];
   profiles: HomeFeedProfile[];
 }
 

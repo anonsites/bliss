@@ -65,20 +65,27 @@ export function RadarDetailPane({
     );
   }
 
+  const isPromoProfile = profile.isPromoProfile === true;
+  const handleLikeClick = () => {
+    if (!isPromoProfile) {
+      onLike();
+    }
+  };
+
   return (
     <div className={styles.radarDetailPane}>
       <ProfileCard
         locationLabel={profile.distance}
         profile={profile}
         phoneNumber={profile.phoneNumber}
-        onSayHi={handleMessage}
+        onSayHi={isPromoProfile ? undefined : handleMessage}
       >
         <ActionButtons
-          isDisabled={mode === "explore"}
+          isDisabled={mode === "explore" || isPromoProfile}
           isLiked={isLiked}
           onGridClick={onClose}
-          onLikeClick={onLike}
-          onMessageClick={handleMessage}
+          onLikeClick={isPromoProfile ? undefined : handleLikeClick}
+          onMessageClick={isPromoProfile ? undefined : handleMessage}
         />
       </ProfileCard>
     </div>

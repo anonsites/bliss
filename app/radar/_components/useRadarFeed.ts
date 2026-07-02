@@ -150,6 +150,10 @@ export function useRadarFeed(initialProfiles: HomeFeedProfile[], initialError: s
   );
 
   const handleLikeToggle = useCallback(async (profile: HomeFeedProfile) => {
+    if (profile.isPromoProfile) {
+      return;
+    }
+
     const { id, userId } = profile;
 
     setLikedProfileIds((current) => toggleProfileId(current, id));

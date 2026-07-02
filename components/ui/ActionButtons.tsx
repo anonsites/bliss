@@ -40,6 +40,9 @@ export function ActionButtons({
     onAuthTrigger?.();
   };
 
+  const isLikeDisabled = isDisabled || !onLikeClick;
+  const isMessageDisabled = isDisabled || !onMessageClick;
+
   const handleGrid = (e: React.MouseEvent) => {
     e.stopPropagation();
     onGridClick();
@@ -50,6 +53,7 @@ export function ActionButtons({
       {/* Like Button */}
       <button
         onClick={handleLike}
+        disabled={isLikeDisabled}
         className={`${uiStyles["action-button"]} ${isLiked ? uiStyles["action-button--active"] : ""}`}
         title={isLiked ? "Unlike" : "Like"}
       >
@@ -67,8 +71,8 @@ export function ActionButtons({
       {/* Message Button */}
       <button 
         onClick={handleMessage}
-        disabled={isDisabled}
-        className={`${uiStyles["action-button"]} ${isDisabled ? uiStyles["action-button--disabled"] : ""}`}
+        disabled={isMessageDisabled}
+        className={`${uiStyles["action-button"]} ${isMessageDisabled ? uiStyles["action-button--disabled"] : ""}`}
         title="Send Message"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

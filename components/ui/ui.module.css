@@ -897,9 +897,9 @@
 }
 
 .media-card__identity-row {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.125rem;
   min-width: 0;
 }
 
@@ -907,6 +907,7 @@
   font-size: 1.15rem;
   min-width: 0;
   flex: 1;
+  margin-right: -0.125rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
