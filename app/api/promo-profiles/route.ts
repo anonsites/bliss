@@ -18,7 +18,9 @@ function mapForClient(row: PromoProfileRow) {
     id: row.id,
     username: row.username?.trim() || "",
     avatarUrl: resolveCloudinaryMediaUrl(row.avatar_url, "image") ?? row.avatar_url,
-    mediaSrc: row.media_url ? resolveCloudinaryMediaUrl(row.media_url, (row.media_type as any) ?? "image") ?? row.media_url : null,
+    mediaSrc: row.media_url
+      ? resolveCloudinaryMediaUrl(row.media_url, row.media_type === "video" ? "video" : "image") ?? row.media_url
+      : null,
     mediaType: row.media_type ?? "image",
     gender: row.gender,
     phoneNumber: row.phone_number ?? undefined,

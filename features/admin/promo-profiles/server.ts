@@ -101,7 +101,12 @@ function mapAdminPromoProfile(row: PromoProfileRow): AdminPromoProfile {
   return {
     ...row,
     avatar_url: resolveCloudinaryMediaUrl(row.avatar_url, "image") ?? row.avatar_url,
-    media_url: row.media_url ? resolveCloudinaryMediaUrl(row.media_url, (row.media_type as any) ?? "image") ?? row.media_url : null,
+    media_url: row.media_url
+      ? resolveCloudinaryMediaUrl(
+          row.media_url,
+          row.media_type === "video" ? "video" : "image",
+        ) ?? row.media_url
+      : null,
     media_type: row.media_type,
     phone_number: row.phone_number ?? null,
     is_verified: Boolean(row.is_verified),
