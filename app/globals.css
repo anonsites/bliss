@@ -1269,48 +1269,18 @@ textarea:focus {
 }
 
 .drop-grid-card {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  width: 100%;
   height: 100%;
-}
-
-.drop-grid-card__filters {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  display: inline-flex;
-  gap: 4px;
-  width: fit-content;
-  margin: 12px auto;
-  padding: 4px;
-  background: rgba(20, 20, 25, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-}
-
-.drop-grid-card__filter {
-  min-width: 68px;
-  padding: 6px 14px;
-  border: none;
-  border-radius: 10px;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.drop-grid-card__filter--active {
-  background: rgba(255, 255, 255, 0.06);
-  color: #27d6c5;
+  min-width: 0;
 }
 
 .drop-grid-card__desktop,
 .drop-grid-card__mobile {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  align-content: start;
   scrollbar-width: none;
 }
 
@@ -1324,38 +1294,23 @@ textarea:focus {
 }
 
 .drop-grid-card__mobile {
-  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
   overflow-y: auto;
   padding: 0 16px 16px;
-}
-
-.drop-grid-card__tile {
-  border-radius: 22px;
-  min-height: 0;
 }
 
 .drop-grid-card--shell .drop-grid-card__mobile {
   padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
 }
 
-.drop-grid-card__page {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  min-height: 100%;
-  padding: 0 18px 18px;
-  scroll-snap-align: start;
-  max-width: 750px;
-  margin: 0 auto;
-}
-
 .drop-grid-card__tile {
   position: relative;
   overflow: hidden;
-  border-radius: 28px;
+  border-radius: 22px;
   background: #000;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  min-height: 0;
 }
 
 .drop-grid-card__media,
@@ -1365,11 +1320,13 @@ textarea:focus {
 }
 
 .drop-grid-card__media img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
 .drop-grid-card__scrim {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.78));
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.78));
 }
 
 .drop-grid-card__meta {
@@ -1378,23 +1335,26 @@ textarea:focus {
   bottom: 14px;
   left: 14px;
   z-index: 1;
-  display: grid;
-  gap: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .drop-grid-card__identity {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .drop-grid-card__identity h3 {
-  font-size: 1rem;
-}
-
-.drop-grid-card__meta p {
-  color: rgba(249, 250, 251, 0.78);
-  font-size: 0.82rem;
+  margin: 0;
+  color: #ffffff;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .drop-grid-card__empty {
@@ -1774,10 +1734,13 @@ textarea:focus {
   }
 
   .drop-grid-card__desktop {
-    display: block;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
     height: 100%;
     overflow-y: auto;
-    scroll-snap-type: y mandatory;
+    padding: 0 18px 24px;
+    align-content: start;
   }
 
   .drop-grid-card--shell .drop-grid-card__desktop {

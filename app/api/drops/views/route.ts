@@ -17,11 +17,11 @@ export async function POST(request: NextRequest) {
     if (payload?.dropId) {
       try {
         await requestSupabaseRest("drop_views", {
-          body: { user_id: user.id, drop_id: payload.dropId },
+          body: { drop_id: payload.dropId, user_id: user.id },
           headers: { Prefer: "return=minimal" },
           method: "POST",
         });
-      } catch (err) {
+      } catch {
         // Ignore DB errors so the UI doesn't break for users.
       }
     }

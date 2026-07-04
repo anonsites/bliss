@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   DetailPanePlaceholder,
   DropPlaceholderIcon,
@@ -134,6 +134,8 @@ export function DropsPageClient({ initialDrops }: DropsPageClientProps) {
   const [selectedDropId, setSelectedDropId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<DropFilter>("new");
   const [seenDropIds, setSeenDropIds] = useState<Set<string>>(() => new Set());
+  const seenTimerRef = useRef<number | null>(null);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
     const storedProgress = getStoredDropsProgress();
@@ -193,6 +195,12 @@ export function DropsPageClient({ initialDrops }: DropsPageClientProps) {
     saveDropsProgress(activeFilter, seenDropIds);
   }, [activeFilter, seenDropIds]);
 
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const filteredDrops = useMemo(() => {
     if (activeFilter === "live") {
       return []; // No drops to filter for 'live' tab
@@ -206,20 +214,34 @@ export function DropsPageClient({ initialDrops }: DropsPageClientProps) {
 
   const handleDropClick = (drop: InsiderDrop) => {
     setSelectedDropId(drop.id);
-    setSeenDropIds((current) => {
-      const next = new Set(current);
-      next.add(drop.id);
-      return next;
-    });
 
-    // Persist seen state server-side for authenticated users (best-effort).
-    fetch("/api/drops/views", {
-      body: JSON.stringify({ dropId: drop.id, source: drop.source }),
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-    }).catch(() => {
-      // View tracking should not block playback.
-    });
+    seenTimerRef.current = window.setTimeout(() => {
+      if (!isMountedRef.current) {
+        void fetch("/api/drops/views", {
+          body: JSON.stringify({ dropId: drop.id, source: drop.source }),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+        }).catch(() => {
+          // View tracking should not block playback.
+        });
+        return;
+      }
+
+      setSeenDropIds((current) => {
+        const next = new Set(current);
+        next.add(drop.id);
+        return next;
+      });
+
+      // Persist seen state server-side for authenticated users (best-effort).
+      void fetch("/api/drops/views", {
+        body: JSON.stringify({ dropId: drop.id, source: drop.source }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      }).catch(() => {
+        // View tracking should not block playback.
+      });
+    }, 5000);
   };
 
   const handleAutoAdvance = () => {
@@ -242,7 +264,9 @@ export function DropsPageClient({ initialDrops }: DropsPageClientProps) {
     <DropCard 
       drop={selectedDrop} 
       onAutoAdvance={handleAutoAdvance} 
-      onClose={() => setSelectedDropId(null)}
+      onClose={() => {
+        setSelectedDropId(null);
+      }}
     />
   ) : (
     <DetailPanePlaceholder

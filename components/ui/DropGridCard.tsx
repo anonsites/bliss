@@ -20,16 +20,6 @@ function getDropOwnerName(drop: InsiderDrop) {
   return drop.source === "promo" ? "Bliss creator" : "New drop";
 }
 
-function chunkDrops(drops: InsiderDrop[], size: number) {
-  const pages: InsiderDrop[][] = [];
-
-  for (let index = 0; index < drops.length; index += size) {
-    pages.push(drops.slice(index, index + size));
-  }
-
-  return pages;
-}
-
 function VideoIcon() {
   return (
     <svg
@@ -125,7 +115,6 @@ export function DropGridCard({
   onDropClick,
   variant = "preview",
 }: DropGridCardProps) {
-  const desktopPages = chunkDrops(drops, 4);
   const rootClassName =
     variant === "shell" ? "drop-grid-card drop-grid-card--shell" : "drop-grid-card";
 
@@ -139,17 +128,13 @@ export function DropGridCard({
       ) : (
         <>
           <div className="drop-grid-card__desktop">
-            {desktopPages.map((page, pageIndex) => (
-              <div className="drop-grid-card__page" key={`page-${activeFilter}-${pageIndex}`}>
-                {page.map((drop) => (
-                  <DropGridTile
-                    key={`desktop-${drop.id}`}
-                    onClick={() => onDropClick(drop)}
-                    drop={drop}
-                    tileKey={`desktop-${drop.id}`}
-                  />
-                ))}
-              </div>
+            {drops.map((drop) => (
+              <DropGridTile
+                key={`desktop-${drop.id}`}
+                onClick={() => onDropClick(drop)}
+                drop={drop}
+                tileKey={`desktop-${drop.id}`}
+              />
             ))}
           </div>
 
