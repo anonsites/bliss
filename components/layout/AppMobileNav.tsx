@@ -26,8 +26,8 @@ export function AppMobileNav({ activeTab, onTabChange }: AppMobileNavProps) {
   ];
 
   return (
-    <nav className="app-mobile-nav" aria-label="Primary" style={{ transform: 'translateY(8px)' }}>
-      <div className="app-mobile-nav__card" style={{ height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
+    <nav className="app-mobile-nav" aria-label="Primary">
+      <div className="app-mobile-nav__card">
         {navItems.map((item) => (
           <button
             aria-current={item.label === activeTab ? "page" : undefined}
@@ -37,8 +37,6 @@ export function AppMobileNav({ activeTab, onTabChange }: AppMobileNavProps) {
                 ? "app-mobile-nav__button app-mobile-nav__button--active"
                 : "app-mobile-nav__button"
             }
-            style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '8px 0', flex: '1'
-            }}
             key={item.label}
             onClick={() => onTabChange(item.label)}
             type="button"
@@ -46,12 +44,9 @@ export function AppMobileNav({ activeTab, onTabChange }: AppMobileNavProps) {
             <span className="app-mobile-nav__icon">
               {item.icon}
               {item.hasBadge && (
-                <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-[#ff2e63] border border-black shadow-[0_0_10px_rgba(255,46,99,0.5)]" />
+                <span className="app-mobile-nav__badge" />
               )}
             </span>
-            {item.label === activeTab && (
-              <span style={{ position: 'absolute', bottom: '0px', width: '24px', height: '2px', backgroundColor: '#27d6c5', borderRadius: '1px' }} />
-            )}
           </button>
         ))}
       </div>

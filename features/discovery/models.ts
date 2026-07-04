@@ -38,6 +38,7 @@ export interface HomeFeedPromoDrop {
 
 export interface HomeFeedPromoProfile {
   avatarUrl: string;
+  city?: string | null;
   id: string;
   isVerified?: boolean;
   mediaSrc: string | null;

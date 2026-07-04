@@ -72,7 +72,7 @@ function buildNearbyUsers(feed: HomeFeedPayload) {
   if (feed.promoProfiles && feed.promoProfiles.length > 0) {
     return feed.promoProfiles.slice(0, 8).map((p, index) => ({
       avatarUrl: p.avatarUrl,
-      distance: "Featured",
+      distance: p.city?.trim() || "Featured",
       id: `${p.id}-promo-${index}`,
       isVerified: p.isVerified ?? true,
       mediaSrc: p.mediaSrc ?? p.avatarUrl,
@@ -453,7 +453,7 @@ export function HomePageClient({ initialFeed }: HomePageClientProps) {
 
   const fallbackNearby = (deferredFeed.promoProfiles ?? []).slice(0, 8).map((p, i) => ({
     avatarUrl: p.avatarUrl,
-    distance: "Featured",
+    distance: p.city?.trim() || "Featured",
     id: `${p.id}-promo-${i}`,
     isVerified: p.isVerified ?? true,
     mediaSrc: p.mediaSrc ?? p.avatarUrl,

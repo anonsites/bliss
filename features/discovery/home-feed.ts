@@ -311,6 +311,7 @@ type PromoProfileRow = {
   gender: string;
   phone_number: string | null;
   is_verified: boolean | null;
+  city: string | null;
 };
 
 function mapPromoProfileForHome(row: PromoProfileRow) {
@@ -318,6 +319,7 @@ function mapPromoProfileForHome(row: PromoProfileRow) {
 
   return {
     avatarUrl: row.avatar_url ? resolveCloudinaryMediaUrl(row.avatar_url, "image") ?? row.avatar_url : "",
+    city: row.city?.trim() || null,
     gender: row.gender,
     id: row.id,
     isVerified: Boolean(row.is_verified),
@@ -336,7 +338,7 @@ async function getPromoProfilesPreview(limit = 8) {
       is_published: "eq.true",
       limit: String(limit),
       order: "created_at.desc",
-      select: "id,username,avatar_url,media_url,media_type,gender,phone_number,is_verified",
+      select: "id,username,avatar_url,media_url,media_type,gender,phone_number,is_verified,city",
     }),
   );
 

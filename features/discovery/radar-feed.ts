@@ -77,6 +77,7 @@ type PromoProfileRow = {
   gender: string;
   phone_number: string | null;
   is_verified: boolean | null;
+  city: string | null;
 };
 
 type UserMediaRow = {
@@ -416,16 +417,19 @@ function mapPromoProfileToHomeFeedProfile(row: PromoProfileRow): HomeFeedProfile
 
   const images = deriveImages(mediaItems);
 
+  const promoCity = row.city?.trim() || null;
+  const cityLabel = promoCity ?? "Featured";
+
   return {
     activityStatus: "Featured",
     age: null,
-    distance: "Featured",
+    distance: cityLabel,
     dropImages: [],
     dropMedia: [],
     id: row.id,
     images,
     isVerified: Boolean(row.is_verified),
-    locationLabel: "Featured",
+    locationLabel: cityLabel,
     media: mediaItems,
     username: row.username?.trim() || "Bliss member",
     userId: row.id,
@@ -441,7 +445,7 @@ async function fetchPromoRadarProfiles(limit = 8, userGender?: string | null) {
       is_published: "eq.true",
       limit: String(limit * 2), // Fetch double to account for filtering
       order: "created_at.desc",
-      select: "id,username,avatar_url,media_url,media_type,gender,phone_number,is_verified",
+      select: "id,username,avatar_url,media_url,media_type,gender,phone_number,is_verified,city",
     }),
   );
 
