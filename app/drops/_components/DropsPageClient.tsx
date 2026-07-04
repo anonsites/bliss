@@ -20,7 +20,7 @@ function getStoredDropsProgress() {
   }
 
   try {
-    const stored = window.sessionStorage.getItem(DROPS_PROGRESS_STORAGE_KEY);
+    const stored = window.localStorage.getItem(DROPS_PROGRESS_STORAGE_KEY);
 
     if (!stored) {
       return null;
@@ -46,7 +46,7 @@ function saveDropsProgress(activeFilter: DropFilter, seenDropIds: Iterable<strin
   }
 
   try {
-    window.sessionStorage.setItem(
+    window.localStorage.setItem(
       DROPS_PROGRESS_STORAGE_KEY,
       JSON.stringify({
         activeFilter,

@@ -1077,34 +1077,3 @@ create trigger on_chat_created
   after insert on public.chats
   for each row execute function public.notify_on_chat_created();
 
--- AUTOMATIC CLEANUP POLICY
--- This function handles the periodic removal of expired content and view history.
-create or replace function public.execute_maintenance_cleanup()
-returns void
-language plpgsql
-security definer
-as $$
-begin
-  -- 1. Remove drops that have passed their expiration time.
-  -- Because drop_views has 'on delete cascade', this automatically cleans up views for expired drops.
-  delete from public.drops 
-  where expires_at < timezone('utc', now());
-
-  -- 2. Explicitly remove any remaining drop_views older than 24 hours.
-  -- This ensures that even if a drop has a custom longer expiration, the view record is pruned.
-  delete from public.drop_views 
-  where created_at < (timezone('utc', now()) - interval '24 hours');
-
-  -- 3. Cleanup orphaned notifications.
-  -- Since reference_id is polymorphic, we handle the "cascade" manually here.
-  delete from public.notifications
-  where type = 'drop_view'
-  and not exists (select 1 from public.drop_views where id = reference_id);
-end;
-$$;
-
-
--- SCHEDULING THE CLEANUP:
--- To run this automatically every hour, (requires the pg_cron extension):
-  create extension if not exists pg_cron;
-  select cron.schedule('hourly-cleanup-job', '0 * * * *', 'select public.execute_maintenance_cleanup()');
