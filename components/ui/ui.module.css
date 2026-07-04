@@ -767,37 +767,25 @@
 ========================= */
 .media-card {
   position: relative;
+  width: 100%;
+  height: 100%;
   min-height: 100%;
   overflow: hidden;
   background: transparent;
+  display: flex;
+  flex-direction: column;
 }
 
 .media-card__media {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .media-card__media img {
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
-}
-
-.media-card__scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 24% 12%, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.18) 24%, transparent 52%),
-    linear-gradient(
-      180deg,
-      rgba(0, 0, 0, 0.82) 0%,
-      rgba(0, 0, 0, 0.62) 16%,
-      rgba(0, 0, 0, 0.32) 32%,
-      rgba(0, 0, 0, 0.12) 50%,
-      rgba(0, 0, 0, 0.08) 64%,
-      rgba(0, 0, 0, 0.78) 100%
-    );
 }
 
 .media-card__tap-overlay {
@@ -879,6 +867,23 @@
   backdrop-filter: none;
 }
 
+.profileCardHeader {
+  position: relative;
+  inset: auto;
+  top: auto;
+  right: auto;
+  left: auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 0;
+  background: #111827;
+  backdrop-filter: none;
+  z-index: 1;
+}
+
 @media (min-width: 1024px) {
   .media-card__top {
     top: 0;
@@ -887,6 +892,10 @@
     gap: 8px;
     padding: clamp(10px, 1.8vh, 14px) clamp(10px, 1.4vw, 12px) clamp(18px, 2.8vh, 24px);
     border-radius: 0 0 18px 18px;
+  }
+
+  .profileCardHeader {
+    padding: 1rem;
   }
 }
 
@@ -984,17 +993,23 @@
   position: relative;
   width: 100%;
   height: 100%;
+  min-height: 100%;
   overflow: hidden;
-  background: #000;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
 }
 
 .media-card__media {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .media-card__media img {
   object-fit: cover;
+  object-position: center;
 }
 
 .media-card__tap-overlay {
@@ -1005,7 +1020,7 @@
 
 .media-card__top,
 .media-card__bottom {
-  position: absolute;
+  position: relative;
   z-index: 4;
   display: flex;
   flex-wrap: nowrap;
@@ -1016,9 +1031,9 @@
 }
 
 .media-card__top {
-  top: 0;
-  right: 0;
-  left: 0;
+  top: auto;
+  right: auto;
+  left: auto;
   display: flex;
   flex-wrap: nowrap;
   gap: 8px;
@@ -1124,7 +1139,7 @@
   width: 100%;
   background: var(--bg-primary);
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   padding: 12px;
   flex: 1;
@@ -1157,6 +1172,7 @@
   position: relative;
   width: 100%;
   height: 100%;
+  min-height: 0;
   border: 3px solid #0d5450;
   border-radius: 16px;
   overflow: hidden;
@@ -1180,8 +1196,9 @@
   position: relative;
   width: 100%;
   height: 100%;
+  min-height: 0;
   overflow: hidden;
-  padding-top: max(56px, calc(env(safe-area-inset-top) + 24px));
+  padding-top: 0;
 }
 
 

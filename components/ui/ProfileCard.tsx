@@ -312,7 +312,7 @@ export function ProfileCard({
     return (
       <div className="flex flex-col h-full w-full gap-0">
         {/* Header outside frame */}
-        <div className={`${uiStyles["media-card__top"]} shrink-0`} style={{ padding: '1rem', backgroundColor: '#111827' }}>
+        <div className={`${uiStyles["media-card__top"]} ${uiStyles.profileCardHeader} shrink-0`} style={{ padding: '1rem', backgroundColor: '#111827' }}>
           {avatar}
           <div className={uiStyles["media-card__profile"]}>
             <div className={`${uiStyles["media-card__identity-row"]} flex items-center min-w-0`}>
@@ -359,7 +359,7 @@ export function ProfileCard({
   return (
     <div className="flex flex-col h-full w-full gap-0">
       {/* Header outside frame */}
-      <div className={`${uiStyles["media-card__top"]} shrink-0`} style={{ padding: '1rem', backgroundColor: '#111827' }}>
+      <div className={`${uiStyles["media-card__top"]} ${uiStyles.profileCardHeader} shrink-0`} style={{ padding: '1rem', backgroundColor: '#111827' }}>
         {profile.hasDrop ? <GreenRing mode="fill">{avatar}</GreenRing> : avatar}
         <div className={uiStyles["media-card__profile"]}>
           <div className={`${uiStyles["media-card__identity-row"]} flex items-center min-w-0`}>
@@ -394,8 +394,7 @@ export function ProfileCard({
                 </div>
               ) : null}
 
-              <div className={`${uiStyles["media-card__media"]} overflow-hidden bg-gray-900`}
-                style={{ position: 'relative', width: '100%', height: '100%' }}>
+              <div className={`${uiStyles["media-card__media"]} overflow-hidden bg-gray-900`}>
                 <div key={imageIndex} className="h-full w-full animate-in fade-in duration-500">
                   {isMediaSlide && currentImage ? (
                     <Image
@@ -404,7 +403,7 @@ export function ProfileCard({
                       fill
                       sizes="(max-width: 767px) 100vw, (max-width: 1024px) 50vw, 420px"
                       priority
-                      style={{ objectFit: "contain", objectPosition: "center" }}
+                      style={{ objectFit: "cover", objectPosition: "center" }}
                     />
                   ) : (
                     isProfileInfoSlide ? ProfileInfoSlide : (

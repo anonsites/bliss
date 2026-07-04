@@ -203,8 +203,6 @@ export function DropCard({ drop, onAutoAdvance, onClose }: DropCardProps) {
           />
         )}
       </div>
-      <div className={uiStyles["media-card__scrim"]} aria-hidden="true" />
-
       <div className={uiStyles["media-card__top"]}>
         {drop.ownerAvatarUrl ? (
           <span className="avatar-trigger__ring" style={{ height: 48, width: 48 }}>
