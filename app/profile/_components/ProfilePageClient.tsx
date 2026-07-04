@@ -94,7 +94,6 @@ function ProfileSummary({
   activeTab,
   onTabChange,
   fullHeight = false,
-  onEdit,
   onLogout,
   showNav = true,
 }: {
@@ -102,17 +101,10 @@ function ProfileSummary({
   activeTab: ProfileTab;
   onTabChange: (tab: ProfileTab) => void;
   fullHeight?: boolean;
-  onEdit: () => void;
   onLogout: () => void;
   showNav?: boolean;
 }) {
   const wrapperClassName = `${styles.profileSummaryWrapper} ${fullHeight ? "flex flex-col" : ""}`;
-
-  const ChevronRight = () => (
-    <svg className="h-4 w-4 text-gray-500/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-      <path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
 
   return (
     <div className={wrapperClassName}>
@@ -122,7 +114,7 @@ function ProfileSummary({
               {/* Profile Picture, Name, and Basic Info */}
 
               <div className={styles.profilePictureContainer}>
-                <div className={`${styles.profileCoverImage} !h-40 lg:!h-64`}>
+                <div className={`${styles.profileCoverImage} h-40! lg:h-64!`}>
                   <Image alt={data.username} className="object-cover" fill priority sizes="(max-width: 1024px) 100vw, 320px" src={data.avatar_url} />
                 </div>
 
@@ -285,44 +277,20 @@ export function ProfilePageClient({ initialData }: ProfilePageClientProps) {
   };
 
   return (
-    <> {/* min-h-[100dvh] lg:hidden */}
-      <div className={styles.profilePageContainer}>
-          <header className={`${styles.profilePageHeader} sticky top-0 z-30 bg-black/60 backdrop-blur-xl border-b border-white/5 flex items-center justify-center`}>
-            <h1 className={styles.profilePageTitle}>Profile</h1>
-          </header>
-          <ProfileSummary
-            data={profileData}
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            onEdit={() => handleTabChange("account")}
-            onLogout={() => setShowLogoutConfirm(true)}
-            showNav={false}
-          />
-          <ProfileNav
-            activeTab={activeTab}
-            className={styles.profileNavStickyMobile}
-            onTabChange={handleTabChange}
-          />
-          {renderContent(activeTab, false)}
-        </div>
+    <div className={styles.profilePageContainerDesktop}>
+      <aside className={styles.profileSidebar}>
+        <ProfileSummary
+          data={profileData}
+          fullHeight={true}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          onLogout={() => setShowLogoutConfirm(true)}
+        />
+      </aside>
 
-
-      <div className={styles.profilePageContainerDesktop}>
-        <aside className={styles.profileSidebar}>
-          <ProfileSummary
-            data={profileData}
-            fullHeight={true}
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            onEdit={() => handleTabChange("account")}
-            onLogout={() => setShowLogoutConfirm(true)}
-          />
-        </aside>
-
-        <main className={styles.profileMainContent}>
-          {renderContent(activeTab, true)}
-        </main>
-      </div>
+      <main className={styles.profileMainContent}>
+        {renderContent(activeTab, true)}
+      </main>
 
       {showLogoutConfirm && (
         <LogOutModal 
@@ -330,6 +298,6 @@ export function ProfilePageClient({ initialData }: ProfilePageClientProps) {
           onConfirm={handleLogout} 
         />
       )}
-    </>
+    </div>
   );
 }

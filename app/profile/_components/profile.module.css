@@ -18,7 +18,7 @@
 
 .profilePageContainerDesktop {
   display: none; /* Hidden by default on mobile */
-  height: 100%;
+  height: calc(95vh);
   background: linear-gradient(to bottom, var(--bg-primary), var(--bg-secondary));
 }
 
@@ -34,11 +34,15 @@
 
 .profileSidebar {
   border-right: 1px solid var(--border);
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .profileMainContent {
-  min-height: 0;
+  height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 2rem 3rem; /* p-8 lg:p-12 */
 }
 
@@ -213,6 +217,13 @@
   padding: 0.5rem; /* p-2 */
 }
 
+.profileNavVertical {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: unset;
+  gap: 0.75rem;
+}
+
 .profileNavStickyMobile {
   position: sticky;
   top: 0;
@@ -251,9 +262,22 @@
   background-color: rgba(255, 255, 255, 0.1); /* hover:bg-white/10 */
 }
 
+.profileNavLinkVertical {
+  height: auto;
+  padding: 0.75rem 1rem;
+  justify-content: flex-start;
+  gap: 0.75rem;
+}
+
 .profileNavLinkActive {
   background-color: rgba(255, 255, 255, 0.15); /* bg-white/15 */
   color: white; /* text-white */
+}
+
+.profileNavLabel {
+  font-size: 0.95rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .profileContentPanelWrapper {
@@ -306,9 +330,16 @@
 
 .uploadGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
   margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .uploadGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
 }
 
 .uploadSlot {
@@ -957,6 +988,114 @@
 .markAllReadButton:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+/* Mobile Navigation Hub Styles */
+.profileMobileNavWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1.5rem 1.25rem;
+}
+
+.profileMobileInfoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.profileMobileInfoSection .profileCoverImage {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  min-height: 18rem;
+}
+
+.profileMobileNavLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profileMobileNavLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: #d1d5db;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.profileMobileNavLink:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.profileMobileNavLink:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.profileMobileNavLinkIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-color, #27d6c5);
+}
+
+.profileMobileNavLinkContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  margin: 0 1rem;
+}
+
+.profileMobileNavLinkLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+  text-align: left;
+}
+
+/* Profile Page With Back Header Styles */
+.profilePageHeaderWithBack {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.profileBackButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  color: white;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profileBackButton:active {
+  transform: scale(0.95);
+}
+
+.profileBackButtonPlaceholder {
+  width: 2.5rem;
+}
+
+.profilePageContent {
+  padding: 1.5rem 1.25rem;
+  padding-bottom: 6rem;
 }
 
 /* =========================

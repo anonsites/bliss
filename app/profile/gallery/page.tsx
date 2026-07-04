@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 import { getAuthenticatedUser } from "@/features/auth/server";
 import { getProfilePageData } from "@/features/profile/server";
-import { ProfilePageClient } from "./_components/ProfilePageClient";
-import { ProfileMobileNav } from "./_components/ProfileMobileNav";
+import { ProfilePageWithBack } from "../_components/ProfilePageWithBack";
+import { UserGallery } from "../_components/UserGallery";
 
-export default async function ProfilePage() {
+export default async function GalleryPage() {
   const authenticatedUser = await getAuthenticatedUser();
 
   if (!authenticatedUser) {
@@ -22,13 +22,11 @@ export default async function ProfilePage() {
   }
 
   return (
-    <>
-      <div className="lg:hidden">
-        <ProfileMobileNav data={profilePageData} />
-      </div>
-      <div className="hidden lg:block">
-        <ProfilePageClient initialData={profilePageData} />
-      </div>
-    </>
+    <ProfilePageWithBack title="Gallery">
+      <UserGallery
+        username={profilePageData.username}
+        media={profilePageData.user_media}
+      />
+    </ProfilePageWithBack>
   );
 }
