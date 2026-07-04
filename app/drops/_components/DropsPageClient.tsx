@@ -94,7 +94,8 @@ function LiveCamsCard() {
 }
 
 // New component for the "Become a model" card
-function BecomeAModelCard() {
+{/*
+  function BecomeAModelCard() {
   const externalLink = "https://example.com/apply-to-model"; // Placeholder external link
   return (
     <a
@@ -123,7 +124,7 @@ function BecomeAModelCard() {
       </div>
     </a>
   );
-}
+}*/}
 
 interface DropsPageClientProps {
   initialDrops: InsiderDrop[];
@@ -295,7 +296,7 @@ export function DropsPageClient({ initialDrops }: DropsPageClientProps) {
         ) : activeFilter === "live" ? (
           <div className={styles.liveCamsGrid}> {/* Assuming a new CSS class for grid layout */}
             <LiveCamsCard />
-            <BecomeAModelCard />
+            {/* <BecomeAModelCard /> */}
           </div>
         ) : (
           <div className={styles.dropEmptyState}>

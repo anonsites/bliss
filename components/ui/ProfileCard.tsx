@@ -264,7 +264,7 @@ export function ProfileCard({
                 ) : null}
               </div>
             ) : null}
-
+            {/*
             <button
               type="button"
               className="inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/5 px-5 py-5 text-sm font-bold text-emerald-350 backdrop-blur-md transition-all duration-300 hover:bg-emerald-500/10 hover:border-emerald-400/30 hover:scale-[1.02] active:scale-[0.98]"
@@ -277,6 +277,7 @@ export function ProfileCard({
               </svg>
               <span>Add to wishlist</span>
             </button>
+            */}
           </div>
         </div>
       </div>

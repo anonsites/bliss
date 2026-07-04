@@ -18,9 +18,9 @@ export function formatNotification(notification: Partial<NotificationPayload>) {
     case "nearby_user":
       return {
         title: "Radar",
-        text: `${targetUsername || "A user"} is around your area, meet up with them`,
+        text: `${targetUsername || "Someone"} is around your area, meet up with them`,
         toastTitle: "Radar",
-        toastMessage: `${targetUsername} is in your area!`,
+        toastMessage: `${targetUsername || "Someone"} is in your area!`,
       };
 
     case "nearby_profiles":
@@ -44,7 +44,7 @@ export function formatNotification(notification: Partial<NotificationPayload>) {
         title: "They Like you",
         text: `${targetUsername || "Someone"} added you to their wishlist`,
         toastTitle: "They Like You",
-        toastMessage: `${targetUsername} added you to their wishlist`,
+        toastMessage: `${targetUsername || "Someone"} added you to their wishlist`,
       };
 
     case "profile_view":
@@ -52,7 +52,7 @@ export function formatNotification(notification: Partial<NotificationPayload>) {
         title: "More views",
         text: `${targetUsername || "Someone"} viewed your profile`,
         toastTitle: "More Views",
-        toastMessage: `${targetUsername} checked out your profile`,
+        toastMessage: `${targetUsername || "Someone"} checked out your profile`,
       };
 
     case "drop_like":
@@ -60,7 +60,7 @@ export function formatNotification(notification: Partial<NotificationPayload>) {
         title: "New like",
         text: `${targetUsername || "Someone"} liked your drop`,
         toastTitle: "New Liked",
-        toastMessage: `${targetUsername} liked your drop`,
+        toastMessage: `${targetUsername || "Someone"} liked your drop`,
       };
 
     case "drop_comment":
@@ -68,7 +68,7 @@ export function formatNotification(notification: Partial<NotificationPayload>) {
         title: "Drop comment",
         text: `${targetUsername || "Someone"} commented on your drop`,
         toastTitle: "New Comment",
-        toastMessage: `${targetUsername} commented on your drop`,
+        toastMessage: `${targetUsername || "Someone"} commented on your drop`,
       };
 
     default:
@@ -122,13 +122,14 @@ export function getNotificationActionPath(
 
   switch (type) {
     case "message":
-      return chatId ? `/messages/${chatId}` : "/messages";
+      return "/messages";
+      //later use chatId to navigate to specific chat if available
 
     case "nearby_user":
       return "/radar";
 
     case "profile_view":
-      return targetUserId ? `/profile/${targetUserId}` : "/radar";
+      return "/radar";
 
     case "nearby_profiles":
     case "nearby_drops":
@@ -137,7 +138,7 @@ export function getNotificationActionPath(
     case "wishlist_add":
     case "drop_like":
     case "drop_comment":
-      return targetUserId ? `/profile/${targetUserId}` : "/drops";
+      return "/drops";
 
     default:
       return undefined;
