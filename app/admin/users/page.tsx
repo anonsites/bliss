@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getAuthenticatedUser } from "@/features/auth/server";
+import { listAdminUsers } from "@/features/admin/users/server";
 import { AdminShell } from "../_components/AdminShell";
+import { AdminUsersClient } from "./_components/AdminUsersClient";
 
 export const dynamic = "force-dynamic";
 
@@ -22,15 +24,6 @@ const styles = {
     color: "#9fb0c6",
     fontSize: "14px",
   },
-  placeholder: {
-    marginTop: "20px",
-    border: "1px dashed rgba(255,255,255,0.16)",
-    borderRadius: "18px",
-    padding: "28px",
-    textAlign: "center" as const,
-    color: "#8ea2b8",
-    background: "rgba(255,255,255,0.02)",
-  },
 };
 
 export default async function AdminUsersPage() {
@@ -44,12 +37,14 @@ export default async function AdminUsersPage() {
     redirect("/");
   }
 
+  const users = await listAdminUsers({ limit: 200 });
+
   return (
     <AdminShell>
       <div style={styles.card}>
         <h1 style={styles.title}>Users</h1>
-        <p style={styles.subtitle}>This section will list and manage users next.</p>
-        <div style={styles.placeholder}>UI placeholder for user management.</div>
+        <p style={styles.subtitle}>Query users by username, city, and gender.</p>
+        <AdminUsersClient initialUsers={users} />
       </div>
     </AdminShell>
   );

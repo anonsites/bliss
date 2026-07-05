@@ -194,7 +194,7 @@ export function AdminPromoProfilesClient({ initialProfiles }: Props) {
           </label>
 
           <label style={styles.label}>
-            Gallery image
+            Gallery image 1
             <label style={styles.mediaCard}>
               <div style={styles.mediaCardPreview}>
                 {mediaPreview ? (
@@ -203,7 +203,7 @@ export function AdminPromoProfilesClient({ initialProfiles }: Props) {
                   <div style={styles.mediaCardPlaceholder}>Select media</div>
                 )}
               </div>
-              <input accept="image/*,.jpg,.jpeg,.png,.webp,.gif,.heic,.heif,.mp4,.mov,.webm,.m4v,.avi" name="media" onChange={handleMediaChange} required style={{ display: "none" }} type="file" />
+              <input accept="image/*,.jpg,.jpeg,.png,.webp,.gif,.heic,.heif" name="media" onChange={handleMediaChange} required style={{ display: "none" }} type="file" />
             </label>
           </label>
 
@@ -217,7 +217,7 @@ export function AdminPromoProfilesClient({ initialProfiles }: Props) {
                   <div style={styles.mediaCardPlaceholder}>Select media</div>
                 )}
               </div>
-              <input accept="image/*,.jpg,.jpeg,.png,.webp,.gif,.heic,.heif,.mp4,.mov,.webm,.m4v,.avi" name="media2" onChange={handleMediaChange2} required style={{ display: "none" }} type="file" />
+              <input accept="image/*,.jpg,.jpeg,.png,.webp,.gif,.heic,.heif" name="media2" onChange={handleMediaChange2} required style={{ display: "none" }} type="file" />
             </label>
           </label>
 

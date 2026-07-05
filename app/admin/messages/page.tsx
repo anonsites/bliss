@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getAuthenticatedUser } from "@/features/auth/server";
 import { AdminShell } from "../_components/AdminShell";
+import { listAdminChatThreads } from "@/features/admin/messages/server";
+import { AdminMessagesClient } from "./_components/AdminMessagesClient";
 
 export const dynamic = "force-dynamic";
 
@@ -22,15 +24,6 @@ const styles = {
     color: "#9fb0c6",
     fontSize: "14px",
   },
-  placeholder: {
-    marginTop: "20px",
-    border: "1px dashed rgba(255,255,255,0.16)",
-    borderRadius: "18px",
-    padding: "28px",
-    textAlign: "center" as const,
-    color: "#8ea2b8",
-    background: "rgba(255,255,255,0.02)",
-  },
 };
 
 export default async function AdminMessagesPage() {
@@ -44,12 +37,14 @@ export default async function AdminMessagesPage() {
     redirect("/");
   }
 
+  const threads = await listAdminChatThreads();
+
   return (
     <AdminShell>
       <div style={styles.card}>
         <h1 style={styles.title}>Messages</h1>
-        <p style={styles.subtitle}>This section will handle message moderation and support next.</p>
-        <div style={styles.placeholder}>UI placeholder for messages.</div>
+        <p style={styles.subtitle}>Monitor chat threads and open conversations.</p>
+        <AdminMessagesClient initialThreads={threads} />
       </div>
     </AdminShell>
   );

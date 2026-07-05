@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/next";
 import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
 import { ToastProvider } from "@/lib/toast-context";
 import { ToastContainer } from "@/components/ui/ToastContainer";
@@ -17,7 +18,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "Bliss",
-  description: "Hookup with loacls nearby.",
+  description: "Hookup with locals nearby.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -43,6 +44,7 @@ export default function RootLayout({
           <NotificationListener />
           <ToastContainer />
           {children}
+          <Analytics />
         </ToastProvider>
       </body>
     </html>
