@@ -23,15 +23,11 @@ export default async function PrivacyPage() {
 
   return (
     <ProfilePageWithBack title="Privacy">
-      <Privacy 
-        blockedUsers={profilePageData.blockedUsers} 
-        onUnblock={(userId) => {}}
+      <Privacy
+        blockedUsers={profilePageData.blockedUsers}
         hiddenContacts={profilePageData.hiddenContacts || []}
-        onHideContact={(phone) => {}}
-        onRemoveHiddenContact={(phone) => {}}
         initialPhoneVisibility={profilePageData.settings.hideFromContacts}
         initialPushNotifications={profilePageData.settings.pushNotifications}
-        onSettingsChange={(settings) => {}}
       />
     </ProfilePageWithBack>
   );

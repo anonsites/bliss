@@ -3,14 +3,17 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import { 
   GalleryIcon,
   NotificationsIcon, 
   PrivacyIcon, 
-  PenIcon, 
+  PenIcon,
+  LogoutIcon,
 } from "./ProfileNavIcons";
+import { LogOutModal } from "./LogOutModal";
 import styles from "./profile.module.css";
 import type { ProfilePageData } from "@/features/profile/models";
 
@@ -27,10 +30,34 @@ const PROFILE_LINKS: Array<{
 ];
 
 export function ProfileMobileNav({ data }: { data: ProfilePageData }) {
+  const router = useRouter();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+    } finally {
+      router.push("/");
+      router.refresh();
+    }
+  };
+
   return (
     <div className={styles.profilePageContainer}>
-      <header className={`${styles.profilePageHeader} sticky top-0 z-30 bg-black/60 backdrop-blur-xl border-b border-white/5 flex items-center justify-center`}>
-        <h1 className={styles.profilePageTitle}>Profile</h1>
+      <header className={`${styles.profilePageHeaderWithBack} sticky top-0 z-30 bg-black/60 backdrop-blur-xl border-b border-white/5`}>
+        <div className="flex flex-1 items-center justify-start">
+          <h1 className={styles.profilePageTitle}>Profile</h1>
+        </div>
+        <button
+          onClick={() => setShowLogoutConfirm(true)}
+          className={styles.logoutButton}
+          title="Logout"
+          type="button"
+        >
+          <LogoutIcon className="h-5 w-5" />
+        </button>
       </header>
 
       <div className={styles.profileMobileNavWrapper}>
@@ -77,6 +104,13 @@ export function ProfileMobileNav({ data }: { data: ProfilePageData }) {
           ))}
         </nav>
       </div>
+
+      {showLogoutConfirm ? (
+        <LogOutModal
+          onClose={() => setShowLogoutConfirm(false)}
+          onConfirm={handleLogout}
+        />
+      ) : null}
     </div>
   );
 }

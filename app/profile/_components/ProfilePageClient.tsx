@@ -19,6 +19,7 @@ import { NotificationsEnhanced } from "@/components/notifications/NotificationsE
 import { Privacy } from "./Privacy";
 import { LogOutModal } from "./LogOutModal";
 import { UserGallery } from "./UserGallery";
+import { CityModal, hasCityValue } from "./CityModal";
 import styles from "./profile.module.css"; // Import the CSS module
 import type { ProfileGender, ProfilePageData } from "@/features/profile/models";
 import type { NotificationPayload } from "@/features/notifications/types";
@@ -162,6 +163,17 @@ export function ProfilePageClient({ initialData }: ProfilePageClientProps) {
   const initialTab = (tabParam && validTabs.includes(tabParam as ProfileTab)) ? (tabParam as ProfileTab) : 'gallery';
   const [activeTab, setActiveTab] = useState<ProfileTab>(initialTab);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showCityModal, setShowCityModal] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === "gallery" && !hasCityValue(profileData.location_label)) {
+      const timeoutId = window.setTimeout(() => {
+        setShowCityModal(true);
+      }, 0);
+
+      return () => window.clearTimeout(timeoutId);
+    }
+  }, [activeTab, profileData.location_label]);
 
   // Fetch notifications from the new API
   useEffect(() => {
@@ -298,6 +310,22 @@ export function ProfilePageClient({ initialData }: ProfilePageClientProps) {
           onConfirm={handleLogout} 
         />
       )}
+
+      <CityModal
+        initialValue={profileData.location_label}
+        isOpen={showCityModal}
+        onClose={() => setShowCityModal(false)}
+        onSaved={(city) => {
+          setProfileData((prev) => ({ ...prev, location_label: city }));
+          setShowCityModal(false);
+        }}
+        profile={{
+          bio: profileData.bio ?? "",
+          birthdate: profileData.birthdate,
+          gender: profileData.gender,
+          username: profileData.username,
+        }}
+      />
     </div>
   );
 }

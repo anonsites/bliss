@@ -2,16 +2,34 @@
 
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+import { CityModal, hasCityValue } from "./CityModal";
 import styles from "./profile.module.css";
 
 export function ProfilePageWithBack({ 
-  title, 
-  children 
-}: { 
-  title: string; 
+  title,
+  children,
+  initialCity,
+}: {
+  title: string;
   children: ReactNode;
+  initialCity?: string | null;
 }) {
   const router = useRouter();
+  const [showCityModal, setShowCityModal] = useState(false);
+
+  useEffect(() => {
+    const promptedBefore = window.localStorage.getItem("profile_city_prompted");
+    const shouldPrompt = window.location.pathname === "/profile" && !hasCityValue(initialCity) && !promptedBefore;
+
+    if (shouldPrompt) {
+      const timeoutId = window.setTimeout(() => {
+        setShowCityModal(true);
+      }, 0);
+
+      return () => window.clearTimeout(timeoutId);
+    }
+  }, [initialCity]);
 
   return (
     <div className={styles.profilePageContainer}>
@@ -38,6 +56,18 @@ export function ProfilePageWithBack({
       <div className={`${styles.profilePageContent} mx-auto w-full max-w-2xl`}>
         {children}
       </div>
+
+      <CityModal
+        isOpen={showCityModal}
+        onClose={() => {
+          window.localStorage.setItem("profile_city_prompted", "true");
+          setShowCityModal(false);
+        }}
+        onSaved={(city) => {
+          window.localStorage.setItem("profile_city_prompted", "true");
+          setShowCityModal(false);
+        }}
+      />
     </div>
   );
 }

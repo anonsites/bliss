@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./profile.module.css";
 import { BlockedUsersIcon, HideUsersIcon, NotificationsIcon } from "./ProfileNavIcons";
 import { BlockedUsersModal } from "./BlockedUsersModal";
@@ -14,10 +14,10 @@ export type BlockedUser = {
 
 type PrivacyProps = {
   blockedUsers: BlockedUser[];
-  onUnblock: (userId: string) => void;
+  onUnblock?: (userId: string) => void;
   hiddenContacts: string[];
-  onHideContact: (phoneNumber: string) => void;
-  onRemoveHiddenContact: (phoneNumber: string) => void;
+  onHideContact?: (phoneNumber: string) => void;
+  onRemoveHiddenContact?: (phoneNumber: string) => void;
   initialPhoneVisibility?: boolean;
   initialPushNotifications?: boolean;
   onSettingsChange?: (settings: { hideFromContacts: boolean; pushNotifications: boolean }) => void;
@@ -90,6 +90,16 @@ export function Privacy({
   const [birthdayVisibility, setBirthdayVisibility] = useState<Visibility>("public");
   const [phoneVisibility, setPhoneVisibility] = useState<Visibility>(initialPhoneVisibility ? "private" : "public");
   const [pushNotifications, setPushNotifications] = useState(initialPushNotifications);
+  const [localBlockedUsers, setLocalBlockedUsers] = useState(blockedUsers);
+  const [localHiddenContacts, setLocalHiddenContacts] = useState(hiddenContacts);
+
+  useEffect(() => {
+    setLocalBlockedUsers(blockedUsers);
+  }, [blockedUsers]);
+
+  useEffect(() => {
+    setLocalHiddenContacts(hiddenContacts);
+  }, [hiddenContacts]);
 
   const handleUnblock = async (userId: string) => {
     setIsUnblocking(userId);
@@ -101,7 +111,8 @@ export function Privacy({
       });
 
       if (response.ok) {
-        onUnblock(userId);
+        setLocalBlockedUsers((prev) => prev.filter((user) => user.id !== userId));
+        onUnblock?.(userId);
       }
     } catch (err) {
       console.error("Unblock failed:", err);
@@ -120,7 +131,8 @@ export function Privacy({
       });
 
       if (response.ok) {
-        onHideContact(phone);
+        setLocalHiddenContacts((prev) => [...prev, phone]);
+        onHideContact?.(phone);
       }
     } catch (err) {
       console.error("Hide contact failed:", err);
@@ -138,7 +150,8 @@ export function Privacy({
       });
 
       if (response.ok) {
-        onRemoveHiddenContact(phone);
+        setLocalHiddenContacts((prev) => prev.filter((contact) => contact !== phone));
+        onRemoveHiddenContact?.(phone);
       }
     } catch (err) {
       console.error("Remove hidden contact failed:", err);
@@ -254,7 +267,7 @@ export function Privacy({
             </div>
             <div>
               <h3 className="font-bold text-white">Black List</h3>
-              <p className="text-xs text-gray-500">{blockedUsers.length} users blocked</p>
+              <p className="text-xs text-gray-500">{localBlockedUsers.length} users blocked</p>
             </div>
           </div>
           <button onClick={() => setShowBlockedModal(true)} className="text-gray-500 hover:text-white transition-colors p-1">
@@ -270,7 +283,7 @@ export function Privacy({
             </div>
             <div>
               <h3 className="font-bold text-white">Hidden Contacts</h3>
-              <p className="text-xs text-gray-500">{hiddenContacts.length} numbers hidden</p>
+              <p className="text-xs text-gray-500">{localHiddenContacts.length} numbers hidden</p>
             </div>
           </div>
           <button onClick={() => setShowHiddenModal(true)} className="text-gray-500 hover:text-white transition-colors p-1">
@@ -284,7 +297,7 @@ export function Privacy({
       {showBlockedModal && (
         <BlockedUsersModal 
           onClose={() => setShowBlockedModal(false)}
-          blockedUsers={blockedUsers}
+          blockedUsers={localBlockedUsers}
           onUnblock={handleUnblock}
           isUnblocking={isUnblocking}
         />
@@ -293,7 +306,7 @@ export function Privacy({
       {showHiddenModal && (
         <HiddenContactsModal 
           onClose={() => setShowHiddenModal(false)}
-          hiddenContacts={hiddenContacts}
+          hiddenContacts={localHiddenContacts}
           onHidePhone={handleHidePhone}
           onRemoveHiddenPhone={handleRemoveHiddenPhone}
           isHiding={isHiding}

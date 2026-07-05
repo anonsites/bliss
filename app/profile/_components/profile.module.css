@@ -1,6 +1,11 @@
 
 .profilePageContainer {
-  min-height: calc(100dvh - 92px - env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  min-height: 100svh;
+  overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .profilePageHeader {
@@ -993,9 +998,14 @@
 /* Mobile Navigation Hub Styles */
 .profileMobileNavWrapper {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   gap: 2rem;
-  padding: 1.5rem 1.25rem;
+  padding: 1.5rem 1.25rem 2.5rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .profileMobileInfoSection {
@@ -1065,12 +1075,17 @@
 
 /* Profile Page With Back Header Styles */
 .profilePageHeaderWithBack {
+  position: sticky;
+  top: 0;
+  z-index: 30;
   padding: 1rem 1.25rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(16px);
 }
 
 .profileBackButton {
