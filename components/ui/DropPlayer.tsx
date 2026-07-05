@@ -31,6 +31,14 @@ export function DropCard({ drop, onAutoAdvance, onClose }: DropCardProps) {
   const [isMuted, setIsMuted] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
 
+  const pauseOtherDropVideos = (activeVideo: HTMLVideoElement) => {
+    document.querySelectorAll('video[data-drop-player="true"]').forEach((candidate) => {
+      if (candidate instanceof HTMLVideoElement && candidate !== activeVideo) {
+        candidate.pause();
+      }
+    });
+  };
+
   const togglePlayback = async () => {
     const video = videoRef.current;
 
@@ -39,6 +47,8 @@ export function DropCard({ drop, onAutoAdvance, onClose }: DropCardProps) {
     }
 
     if (video.paused) {
+      pauseOtherDropVideos(video);
+
       try {
         await video.play();
         setIsPlaying(true);
@@ -87,6 +97,9 @@ export function DropCard({ drop, onAutoAdvance, onClose }: DropCardProps) {
       return;
     }
 
+    video.dataset.dropPlayer = "true";
+    pauseOtherDropVideos(video);
+
     const handlePlay = () => {
       setIsPlaying(true);
       setIsBuffering(false);
@@ -124,6 +137,8 @@ export function DropCard({ drop, onAutoAdvance, onClose }: DropCardProps) {
     setIsPlaying(!video.paused);
 
     return () => {
+      video.pause();
+      video.removeAttribute("data-drop-player");
       video.removeEventListener("play", handlePlay);
       video.removeEventListener("pause", handlePause);
       video.removeEventListener("ended", handleEnded);
