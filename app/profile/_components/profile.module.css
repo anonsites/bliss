@@ -1,9 +1,13 @@
 
 .profilePageContainer {
-  min-height: 100dvh;
-  min-height: 100svh;
+  position: relative;
+  height: 100%;
+  min-height: 0;
   overflow-x: hidden;
-  padding-bottom: env(safe-area-inset-bottom);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
   background: linear-gradient(to bottom, var(--bg-primary), var(--bg-secondary));
 }
 
@@ -1072,14 +1076,16 @@
   position: sticky;
   top: 0;
   z-index: 30;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .profileBackButton {

@@ -78,8 +78,8 @@ export function Privacy({
   hiddenContacts,
   onHideContact,
   onRemoveHiddenContact,
-  initialPhoneVisibility = false,
-  initialPushNotifications = true,
+  initialPhoneVisibility = true,
+  initialPushNotifications = false,
   onSettingsChange,
 }: PrivacyProps) {
   const [isUnblocking, setIsUnblocking] = useState<string | null>(null);
@@ -87,7 +87,7 @@ export function Privacy({
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [showBlockedModal, setShowBlockedModal] = useState(false);
   const [showHiddenModal, setShowHiddenModal] = useState(false);
-  const [birthdayVisibility, setBirthdayVisibility] = useState<Visibility>("public");
+  const [birthdayVisibility, setBirthdayVisibility] = useState<Visibility>("private");
   const [phoneVisibility, setPhoneVisibility] = useState<Visibility>(initialPhoneVisibility ? "private" : "public");
   const [pushNotifications, setPushNotifications] = useState(initialPushNotifications);
   const [localBlockedUsers, setLocalBlockedUsers] = useState(blockedUsers);

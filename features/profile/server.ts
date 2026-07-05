@@ -364,8 +364,8 @@ export async function getProfilePageData(userId: string): Promise<ProfilePageDat
       createdAt: n.created_at,
     })),
     settings: {
-      hideFromContacts: Boolean(settings?.hide_from_contacts),
-      pushNotifications: settings?.push_notifications ?? true,
+      hideFromContacts: settings?.hide_from_contacts ?? true,
+      pushNotifications: settings?.push_notifications ?? false,
       ghostMode: Boolean(settings?.ghost_mode),
     },
     blockedUsers: blockedUserIds.map((id) => {

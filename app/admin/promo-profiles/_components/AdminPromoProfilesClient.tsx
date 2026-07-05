@@ -44,6 +44,7 @@ export function AdminPromoProfilesClient({ initialProfiles }: Props) {
   const [activeTab, setActiveTab] = useState<"create" | "published">("create");
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
+  const [mediaPreview2, setMediaPreview2] = useState<string | null>(null);
 
   const hasProfiles = profiles.length > 0;
 
@@ -69,6 +70,18 @@ export function AdminPromoProfilesClient({ initialProfiles }: Props) {
 
     const objectUrl = URL.createObjectURL(file);
     setMediaPreview(objectUrl);
+  }
+
+  function handleMediaChange2(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      setMediaPreview2(null);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    setMediaPreview2(objectUrl);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -191,6 +204,20 @@ export function AdminPromoProfilesClient({ initialProfiles }: Props) {
                 )}
               </div>
               <input accept="image/*,.jpg,.jpeg,.png,.webp,.gif,.heic,.heif,.mp4,.mov,.webm,.m4v,.avi" name="media" onChange={handleMediaChange} required style={{ display: "none" }} type="file" />
+            </label>
+          </label>
+
+          <label style={styles.label}>
+            Gallery image 2
+            <label style={styles.mediaCard}>
+              <div style={styles.mediaCardPreview}>
+                {mediaPreview2 ? (
+                  <Image alt="Selected gallery image 2 preview" fill sizes="140px" src={mediaPreview2} style={{ objectFit: "cover" }} />
+                ) : (
+                  <div style={styles.mediaCardPlaceholder}>Select media</div>
+                )}
+              </div>
+              <input accept="image/*,.jpg,.jpeg,.png,.webp,.gif,.heic,.heif,.mp4,.mov,.webm,.m4v,.avi" name="media2" onChange={handleMediaChange2} required style={{ display: "none" }} type="file" />
             </label>
           </label>
 

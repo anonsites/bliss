@@ -16,8 +16,8 @@ type SettingsResponse = {
 
 const DEFAULT_SETTINGS: ProfileSettingsData = {
   ghostMode: false,
-  hideFromContacts: false,
-  pushNotifications: true,
+  hideFromContacts: true,
+  pushNotifications: false,
 };
 
 function mapSettings(row: UserSettingsRow | null | undefined): ProfileSettingsData {
@@ -27,8 +27,8 @@ function mapSettings(row: UserSettingsRow | null | undefined): ProfileSettingsDa
 
   return {
     ghostMode: Boolean(row.ghost_mode),
-    hideFromContacts: Boolean(row.hide_from_contacts),
-    pushNotifications: row.push_notifications ?? true,
+    hideFromContacts: row.hide_from_contacts ?? true,
+    pushNotifications: row.push_notifications ?? false,
   };
 }
 
