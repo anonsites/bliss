@@ -17,24 +17,32 @@ type CityModalProps = {
   };
 };
 
-function hasCityValue(value: string | null | undefined) {
+function normalizeCityValue(value: string | null | undefined) {
   if (!value) {
-    return false;
+    return "";
   }
 
   const normalized = value.trim();
 
-  return normalized.length > 0 && !["Location unavailable", "Location enabled"].includes(normalized);
+  if (!normalized || ["Location unavailable", "Location enabled"].includes(normalized)) {
+    return "";
+  }
+
+  return normalized;
+}
+
+function hasCityValue(value: string | null | undefined) {
+  return normalizeCityValue(value).length > 0;
 }
 
 export function CityModal({ initialValue, isOpen, onClose, onSaved, profile }: CityModalProps) {
-  const [city, setCity] = useState(initialValue ?? "");
+  const [city, setCity] = useState(normalizeCityValue(initialValue));
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      setCity(initialValue ?? "");
+      setCity(normalizeCityValue(initialValue));
       setError(null);
     }
   }, [initialValue, isOpen]);
@@ -92,9 +100,9 @@ export function CityModal({ initialValue, isOpen, onClose, onSaved, profile }: C
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-white">Add your city</h2>
+            <button onClick={onClose} className="text-2xl text-gray-500 hover:text-white transition-colors" type="button">&times;</button>
             <p className="mt-1 text-sm text-gray-500">We use this to help people discover you nearby.</p>
           </div>
-          <button onClick={onClose} className="text-2xl text-gray-500 hover:text-white transition-colors" type="button">&times;</button>
         </div>
 
         <form className={styles.editUsernameModalForm} onSubmit={handleSubmit}>

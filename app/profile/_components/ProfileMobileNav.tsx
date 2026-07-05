@@ -24,7 +24,7 @@ const PROFILE_LINKS: Array<{
   color: string;
 }> = [
   { href: "/profile/gallery", icon: <GalleryIcon className="h-6 w-6" />, label: "Gallery", color: "#27d6c5" },
-  { href: "/profile/edit", icon: <PenIcon className="h-6 w-6" />, label: "Edit Profile", color: "#27d6c5" },
+  { href: "/profile/edit", icon: <PenIcon className="h-6 w-6" />, label: "Account", color: "#27d6c5" },
   { href: "/profile/privacy", icon: <PrivacyIcon className="h-6 w-6" />, label: "Privacy", color: "#27d6c5" },
   { href: "/profile/notifications", icon: <NotificationsIcon className="h-6 w-6" />, label: "Notifications", color: "#27d6c5" },
 ];
