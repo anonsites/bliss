@@ -6,8 +6,8 @@ export interface ProfileEditorData {
   bio: string;
   gender: ProfileGender;
   isVerified: boolean;
-  locationLabel: string;
-  phoneNumber: string;
+  locationLabel: string | null;
+  phoneNumber: string | null;
   username: string;
 }
 
@@ -33,8 +33,8 @@ export interface ProfilePageData {
   gender: string;
   avatar_url: string;
   is_profile_verified: boolean;
-  location_label: string;
-  phone_number: string;
+  location_label: string | null;
+  phone_number: string | null;
   user_media: Array<{ id: string; media_url: string }>;
   drops: Array<{ id: string; media_url: string; created_at: string }>;
   notifications: ProfileNotificationData[];
